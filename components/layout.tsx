@@ -4,7 +4,7 @@ import NavBar from './navbar';
 import Footer from './footer';
 
 const BaseLayout: React.FC = ({ children }: {children: React.ReactNode}) => (
-  <Layout>
+  <Layout style={{ minHeight: '100vh' }}>
     <NavBar
       root="/"
       username="ricky"
@@ -13,7 +13,7 @@ const BaseLayout: React.FC = ({ children }: {children: React.ReactNode}) => (
       upload="upload"
     />
     <Layout>
-      <Layout.Content style={{ minHeight: '500px' }}>
+      <Layout.Content>
         {children}
       </Layout.Content>
       <Footer />

@@ -1,6 +1,6 @@
 import React from 'react';
 import 'antd/dist/antd.less';
-import '../styles/global.css';
+import '../styles/global.less';
 // eslint-disable-next-line no-unused-vars
 import { AppProps } from 'next/app';
 
