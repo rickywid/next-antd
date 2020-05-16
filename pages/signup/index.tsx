@@ -11,37 +11,6 @@ import {
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import Layout from '../../components/layout';
 
-const formItemLayout = {
-  labelCol: {
-    xs: {
-      span: 24,
-    },
-    sm: {
-      span: 8,
-    },
-  },
-  wrapperCol: {
-    xs: {
-      span: 24,
-    },
-    sm: {
-      span: 16,
-    },
-  },
-};
-const tailFormItemLayout = {
-  wrapperCol: {
-    xs: {
-      span: 24,
-      offset: 0,
-    },
-    sm: {
-      span: 16,
-      offset: 8,
-    },
-  },
-};
-
 const SignUp:React.FunctionComponent = () => {
   const [form] = Form.useForm();
 
@@ -116,7 +85,7 @@ const SignUp:React.FunctionComponent = () => {
                       return Promise.resolve();
                     }
 
-                    return Promise.reject('The two passwords that you entered do not match!');
+                    return Promise.reject(new Error('The two passwords that you entered do not match!'));
                   },
                 }),
               ]}
@@ -152,7 +121,7 @@ const SignUp:React.FunctionComponent = () => {
               valuePropName="checked"
               rules={[
                 {
-                  validator: (_, value) => (value ? Promise.resolve() : Promise.reject('Should accept agreement')),
+                  validator: (_, value) => (value ? Promise.resolve() : Promise.reject(new Error('Should accept agreement'))),
                 },
               ]}
             >
