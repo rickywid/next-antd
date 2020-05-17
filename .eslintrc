@@ -1,12 +1,10 @@
 // https://github.com/benmosher/eslint-plugin-import/issues/1615
 
 {
-	"extends": ["airbnb", "plugin:react/recommended"],
+	"extends": ["react-app"],
 	"parser": "@typescript-eslint/parser",
 	"plugins": ["@typescript-eslint"],
 	"rules": {
-		"jsx-a11y/anchor-is-valid": "off",
-		"react/jsx-props-no-spreading": "off",
 		"react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx", ".tsx", "ts"] }],
 		"import/extensions": ["error", "ignorePackages", {
 			"js": "never",
