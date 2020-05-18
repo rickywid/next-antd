@@ -13,7 +13,6 @@ const ProjectsMain:NextPage<IProps> = ({ projects }) => {
     console.log('projects main mounted');
     
   });
-  console.log(projects)
   const renderProjects = () => {
     return projects.map(project => (
       <div className="project-card" key={project.id}>
@@ -36,7 +35,6 @@ const ProjectsMain:NextPage<IProps> = ({ projects }) => {
 
   return (
     <div>
-      test
       {renderProjects()}
     </div>
   );
