@@ -11,6 +11,7 @@ import {
   Form,
   Select
 } from 'antd';
+import fetch from 'isomorphic-fetch';
 
 const Home: NextPage = ({projects}:{children?: React.ReactNode, projects: IProject[]}) => {
   const onFormLayoutChange = ({ filter }) => {
@@ -18,6 +19,8 @@ const Home: NextPage = ({projects}:{children?: React.ReactNode, projects: IProje
 
     // DB Query to filter results based on selected option
   };
+
+  console.log(projects);
 
   return (
       <BaseLayout>
@@ -42,7 +45,6 @@ const Home: NextPage = ({projects}:{children?: React.ReactNode, projects: IProje
           </Form.Item>
         </Form>
 
-        <ProjectsMain projects={projects} />
       </div>
         <style global jsx>{`
           
@@ -52,11 +54,16 @@ const Home: NextPage = ({projects}:{children?: React.ReactNode, projects: IProje
 };
 
 export const getServerSideProps: GetServerSideProps<{projects: IProject[]}> = async context => {
+  return fetch('http://localhost:3000/api/projects').then(res=>{
+    return res.json();
+  }).then(projects=>{
+    return {props: { projects }}
+  })
 
   // db queries
-  return {
-    props: { projects: data.projects }
-  }
+  // return {
+  //   props: { projects: data.projects }
+  // }
 }
 
 export default Home;
