@@ -33,7 +33,7 @@ handler
           console.log(error);
         }
         console.log(result);
-        res.send(result.secure_url)
+        res.send(result)
       });
     });
 

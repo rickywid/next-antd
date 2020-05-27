@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import Router from 'next/router';
 import Head from 'next/head';
+import ProjectMain from '../../../components/projects-main';
 import Layout from '../../../components/layout';
 import './upload-project.module.less';
 
@@ -8,35 +10,34 @@ import {
   Input,
   Select,
   Switch,
-  Steps, 
   Upload, 
   Modal,
   Button,
   Tooltip
 } from 'antd';
 import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-const { Step } = Steps;
+
 const { Option } = Select;
 
 const UploadProject:React.FunctionComponent = () => {
   useEffect(() => {
     console.log('upload mounted');
-  });
+  }, []);
 
-  const [currentStep, setStep] = useState<number>(0);
   const [componentSize, setComponentSize] = useState('medium');
+  const [technologiesSelect, setTechnologiesSelect] = useState([]);
+  const [tagSelect, setTagSelect] = useState([]);
   const [previewVisible, setPreviewVisible] = useState<boolean>(false);
   const [previewImage, setPreviewImage] = useState<string>('');
   const [previewTitle, setPreviewTitle] = useState<string>('');
-  const [fileList, setFileList] = useState<any[]>([
-    {
-      uid: '-1',
-      name: 'image.png',
-      status: 'done',
-      url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-    }
-  ]);
-  const onFormLayoutChange = ({ size }) => {
+  const [fileList, setFileList] = useState<any[]>([]);              // list of files uploaded locally used by antd
+  const [fileListUpload, setFileListUpload] = useState<any[]>([]);  // list of files uploaded to cloduinary
+  const [inputName, setInputName] = useState<string>('');
+  const [inputTagline, setInputTagline] = useState<string>('');
+  const [inputWebsite, setInputWebsite] = useState<string>('');
+  const [inputDesc, setInputDesc] = useState<string>('');
+
+  const onFormLayoutChange = ({ size, collaboration }) => {
     setComponentSize(size);
   };
 
@@ -49,29 +50,25 @@ const UploadProject:React.FunctionComponent = () => {
     });
   }
 
-
-  const changeStep = (e:React.MouseEvent<HTMLElement, MouseEvent>, nextStep:boolean) => {
-
-    if(nextStep) {
-      setStep(currentStep + 1);
-    } else {
-      setStep(currentStep - 1);
-    }
-  }
-
   const technologies = ['React', 'Angular', 'ASP.NET', 'Node/Express', 'Vue', 'Django','Flask', 'Laravel', 'Ruby on Rails', 'Drupal'];
   const childrenTech = [];
   for (let i = 0; i < technologies.length; i++) {
-    childrenTech.push(<Option key={i} value={technologies[i]}>{technologies[i]}</Option>);
+    childrenTech.push(<Option key={i} value={i+1}>{technologies[i]}</Option>);
   }
   const tags = ['Productivity', 'Fintech', 'Analytics', 'Sports', 'Music', 'Personal'];
   const childrenTags = [];
   for (let i = 0; i < tags.length; i++) {
-    childrenTags.push(<Option key={i} value={tags[i]}>{tags[i]}</Option>);
+    childrenTags.push(<Option key={i} value={i+1}>{tags[i]}</Option>);
   }
 
-  const handleChange = (value) => {
-    console.log(`selected ${value}`);
+  const onSelectTechnologyChange = (value) => {
+    setTechnologiesSelect(value);
+
+  }
+
+  const onSelectTagChange = (value) => {
+    setTagSelect(value);
+  
   }
 
   const handleCancel = () => setPreviewVisible(false);
@@ -86,11 +83,55 @@ const UploadProject:React.FunctionComponent = () => {
     setPreviewVisible(true);
   }
 
-  const handleOnFinish = (values) => {
-    console.log('values');
+  const handleOnRemove = (info) => {
+    let antdIndexPos = null;
+    const removedFileUID = info.uid;
+
+    // get index of antd uploaded file reference
+    for(let i = 0; i < fileList.length; i++) {
+      if(fileList[i].uid === removedFileUID) {
+        antdIndexPos = i;
+      }
+    }
+
+    // remove uploaded file at index position of local file
+    setFileListUpload([fileListUpload.slice(0, antdIndexPos).concat(fileListUpload.slice(antdIndexPos+1))]);
   }
 
-  const handleUploadChange = ({ fileList }) => setFileList(fileList);
+  const handleOnFinish = (values) => {
+    const { name, description, tagline, website, technologies, tags, collaboration } = values;
+    const form= new FormData()
+    form.append('name', name);
+    form.append('description', description);
+    form.append('tagline', tagline);
+    form.append('url', website);
+    form.append('technologies', technologies);
+    form.append('tags', tags);
+    form.append('collaboration', collaboration);
+    form.append('screenshots', fileListUpload);
+    form.append('user_id', '1');
+
+    const config= {
+      method: "POST",
+      body: form
+    }
+
+    fetch('http://localhost:3000/api/projects', config).then((res: any) => {
+      if(res.status === 200) {
+        Router.push('/');
+      }
+    }).catch((err: Error) => {
+      console.log(err)
+    })	
+  }
+
+  const handleOnFinishFailed = (values) => {
+    console.log(values);
+  }
+
+  const handleUploadChange = ({ fileList }) => {
+    setFileList(fileList)
+  };
 
   const customRequest = file => {
 			const data= new FormData()
@@ -101,103 +142,24 @@ const UploadProject:React.FunctionComponent = () => {
       }
 
 			fetch('http://localhost:3000/api/image/upload', config).then((res: any) => {
-        return res.text();
-			}).then(url => {
+        return res.json();
+			}).then(data => {
         file.onProgress(e => console.log(e));
         file.onSuccess(e => console.log(e));
-        console.log(fileList)
+        
+        setFileListUpload([...fileListUpload, data.secure_url]);
       }).catch((err: Error) => {
 				console.log(err)
 			})	
   }
-  const renderStepComponent = (step) => {
-    if(step === 1) {
-        return projectInformation;
-    } else if(step === 2) {
-        return images;
-    } else if(step === 3) {
-        return preview;
-    } else if(step === 4) {
-        return submit;
-    }
-  }
 
-  const step = currentStep + 1;
+
   const uploadButton = (
     <div>
       <PlusOutlined />
       <div className="ant-upload-text">Upload</div>
     </div>
   );
-
-  const projectInformation =
-  <React.Fragment>
-    <Form.Item label="Project Name" required>
-      <Input />
-    </Form.Item>
-    <Form.Item label="Tagline" required>
-      <Input />
-    </Form.Item>
-    <Form.Item name={['user', 'introduction']} label="Introduction" required>
-      <Input.TextArea />
-    </Form.Item>
-    <Form.Item label="Website" required>
-      <Input />
-    </Form.Item>
-    <Form.Item label="Technologies">
-      <Select
-        mode="multiple"
-        style={{ width: '100%' }}
-        placeholder="Please select"
-        onChange={handleChange}
-      >
-        {childrenTech}
-      </Select>
-    </Form.Item>
-    <Form.Item label="Tags">
-      <Select
-        mode="multiple"
-        style={{ width: '100%' }}
-        placeholder="Please select"
-        onChange={handleChange}
-      >
-        {childrenTags}
-      </Select>
-    </Form.Item>
-    <Form.Item label={<span>
-            Collaboration&nbsp;
-            <Tooltip title="Are you interested in collaborating with others?">
-              <QuestionCircleOutlined />
-            </Tooltip>
-          </span>}>
-      <Switch />
-    </Form.Item>
-  </React.Fragment>
-
-;
-
-  const images = <div className="clearfix">
-  <Upload
-    action="http://localhost:3000/api/image/upload"
-    listType="picture-card"
-    fileList={fileList}
-    onPreview={handlePreview}
-    onChange={handleUploadChange}
-    customRequest={customRequest}
-  >
-    {fileList.length >= 8 ? null : uploadButton}
-  </Upload>
-  <Modal
-    visible={previewVisible}
-    title={previewTitle}
-    footer={null}
-    onCancel={handleCancel}
-  >
-    <img alt="example" style={{ width: '100%' }} src={previewImage} />
-  </Modal>
-</div>;
-  const preview = <div>preview</div>;
-  const submit = <div>submit</div>;
 
   return (
     <Layout>
@@ -207,46 +169,133 @@ const UploadProject:React.FunctionComponent = () => {
           <link rel="icon" href="/favicon.ico" />
         </Head>
         <main>
-        <Steps current={currentStep}>
-          <Step title="Project Information" />
-          <Step title="Images" />
-          <Step title="Preview" />
-          <Step title="Submit" />
-        </Steps>
-
-        <div className="project-upload-body">
-          <Form
-          labelCol={{
-            span: 4,
-          }}
-          wrapperCol={{
-            span: 14,
-          }}
-          layout="vertical"
-          initialValues={{
-            size: componentSize,
-          }}
-          onFinish={handleOnFinish}
-          onValuesChange={onFormLayoutChange}
-        >
-
-          {renderStepComponent(step)}
-
-        </Form>
-          {step > 1 && step < 5 ? 
-            <div>
-              <Button type="primary" onClick={e => changeStep(e, false)}>Back</Button>
-              <Button type="primary" onClick={e => changeStep(e, true)}>Next</Button>
-            </div> :
-            step === 5 ? 
-            <div>
-              <Button onClick={e => changeStep(e, false)}>Back</Button>
-              <Button type="primary" htmlType="submit">Submit</Button>
-            </div> : <Button type="primary" onClick={e => changeStep(e, true)}>Next</Button>
-            
-            
-          }
-
+          <div className="project-upload-body">
+            <Form
+              labelCol={{
+                span: 28,
+              }}
+              wrapperCol={{
+                span: 14,
+              }}
+              layout="vertical"
+              initialValues={{
+                size: componentSize,
+                collaboration: false,
+                technologies: [],
+                tags: []
+              }}
+              onFinish={handleOnFinish}
+              onFinishFailed={handleOnFinishFailed}
+              onValuesChange={onFormLayoutChange}
+            >
+            <Form.Item 
+              label="Project Name" 
+              name="name" 
+              rules={[{required: true, message:'Required'}]}
+            >
+              <Input 
+                value={inputName} 
+                onChange={(e)=> setInputName(e.target.value)} 
+            />
+            </Form.Item>
+            <Form.Item 
+              label="Tagline" 
+              name="tagline" 
+              rules={[{required: true, message:'Required'}]}
+            >
+              <Input 
+                value={inputTagline} 
+                onChange={(e)=> setInputTagline(e.target.value)}
+              />
+            </Form.Item>
+            <Form.Item 
+              name="description" 
+              label="Tell us about your project (features, tech stack, motivation)" 
+              rules={[{required: true, message:'Required'}]}
+            >
+              <Input.TextArea 
+                value={inputDesc} 
+                onChange={(e)=> setInputDesc(e.target.value)}
+              />
+            </Form.Item>
+            <Form.Item 
+              label="Website" 
+              name="website" 
+              rules={[{required: true, message:'Required'}]}
+            >
+              <Input 
+                value={inputWebsite} 
+                onChange={(e)=> setInputWebsite(e.target.value)}
+              />
+            </Form.Item>
+            <Form.Item label="Technologies" name="technologies">
+              <Select
+                mode="multiple"
+                style={{ width: '100%' }}
+                placeholder="Please select"
+                onChange={onSelectTechnologyChange}
+              >
+                {childrenTech}
+              </Select>
+            </Form.Item>
+            <Form.Item label="Tags" name="tags">
+              <Select
+                mode="multiple"
+                style={{ width: '100%' }}
+                placeholder="Please select"
+                onChange={onSelectTagChange}
+              >
+                {childrenTags}
+              </Select>
+            </Form.Item>
+            <Form.Item label={<span>
+                    Collaboration&nbsp;
+                    <Tooltip title="Are you interested in collaborating with other developers?">
+                      <QuestionCircleOutlined />
+                    </Tooltip>
+                  </span>}
+                  name="collaboration"
+            >
+              <Switch checkedChildren="Yes" unCheckedChildren="No" />
+            </Form.Item>
+            <Form.Item label="Add Thumbnail">
+              <p>Add a thumbnail(250x250) and a screenshot of your project.</p>
+              <div className="clearfix">
+                <Upload
+                  listType="picture-card"
+                  fileList={fileList}
+                  onPreview={handlePreview}
+                  onChange={handleUploadChange}
+                  onRemove={handleOnRemove}
+                  customRequest={customRequest}
+                >
+                  {fileList.length >= 4 ? null : uploadButton}
+                </Upload>
+                <Modal
+                  visible={previewVisible}
+                  title={previewTitle}
+                  footer={null}
+                  onCancel={handleCancel}
+                >
+                  <img alt="example" style={{ width: '100%' }} src={previewImage} />
+                </Modal>
+              </div>
+            </Form.Item>
+            <ProjectMain projects={[{
+              id: 1,
+              name: inputName,
+              description: inputDesc,
+              tagline: inputTagline,
+              url: inputWebsite,
+              tags: tagSelect,
+              technologies: technologiesSelect,
+              collaboration: true,
+              created_on: '2020-12-01',
+              user_id: 1,
+              images: fileListUpload.length >= 1 ? fileListUpload : ['sdf']
+            }]}/>
+            <Button type="primary" htmlType="submit">Submit</Button>
+            </Form>
           </div>
         </main>
       </div>

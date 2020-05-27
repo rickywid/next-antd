@@ -4,7 +4,6 @@ import Head from 'next/head';
 import BaseLayout from '../components/layout';
 import ProjectsMain from '../components/projects-main';
 import SearchBar from '../components/search-bar';
-import data, { IProject } from '../mocks/data';
 import './index.module.less';
 
 import {
@@ -19,8 +18,6 @@ const Home: NextPage = ({projects}:{children?: React.ReactNode, projects: IProje
 
     // DB Query to filter results based on selected option
   };
-
-  console.log(projects);
 
   return (
       <BaseLayout>
@@ -44,7 +41,7 @@ const Home: NextPage = ({projects}:{children?: React.ReactNode, projects: IProje
             </Select>
           </Form.Item>
         </Form>
-
+        <ProjectsMain projects={projects}/>
       </div>
         <style global jsx>{`
           
@@ -57,13 +54,8 @@ export const getServerSideProps: GetServerSideProps<{projects: IProject[]}> = as
   return fetch('http://localhost:3000/api/projects').then(res=>{
     return res.json();
   }).then(projects=>{
-    return {props: { projects }}
-  })
-
-  // db queries
-  // return {
-  //   props: { projects: data.projects }
-  // }
+    return {props: { projects: projects.data }}
+  });
 }
 
 export default Home;
