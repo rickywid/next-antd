@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
+import { NextPage } from 'next';
 import Router from 'next/router';
 import Head from 'next/head';
 import ProjectMain from '../../../components/projects-main';
@@ -19,9 +20,12 @@ import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 
 const { Option } = Select;
 
-const UploadProject:React.FunctionComponent = () => {
+const UploadProject:NextPage = () => {
   useEffect(() => {
     console.log('upload mounted');
+    if(localStorage.getItem('token') === null) {
+      Router.replace('/');
+    }
   }, []);
 
   const [componentSize, setComponentSize] = useState('medium');
@@ -302,5 +306,11 @@ const UploadProject:React.FunctionComponent = () => {
     </Layout>
   );
 };
+
+// UploadProject.getInitialProps = async (ctx) => {
+//   console.log(localStorage.getItem('token'));
+
+//   return {};
+// }
 
 export default UploadProject;

@@ -58,6 +58,12 @@ const NavBar:React.FC<Props> = ({
           <span>{upload}</span>
         </Link>
       </Menu.Item>
+      <Menu.Item key="5">
+        <UserOutlined />
+        <Link href={`/users`}>
+          <span>users</span>
+        </Link>
+      </Menu.Item>
     </Menu>
       <style jsx>
         {`

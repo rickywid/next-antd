@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState} from 'react';
 import Head from 'next/head';
+import Router from 'next/router';
 import './signup.less';
 import {
   Form,
@@ -13,9 +14,39 @@ import Layout from '../../components/layout';
 
 const SignUp:React.FunctionComponent = () => {
   const [form] = Form.useForm();
+  const [displayError, setDisplayError] = useState(false);
 
   const onFinish = (values) => {
     console.log('Received values of form: ', values);
+
+    const { username, email, password } = values;
+    const form= new FormData()
+    form.append('username', username);
+    form.append('email', email);
+    form.append('password', password);
+
+    const config= {
+      method: "POST",
+      body: form
+    }
+
+    fetch('http://localhost:3000/api/signup', config).then((res: any) => {
+      
+      if(res.status === 200) {
+        // Router.push('/');
+        return res.json();
+      }
+      
+      return res.text()
+
+      
+    }).then(data => {
+      console.log(data)
+      localStorage.setItem('token', data.token);
+      setDisplayError(!displayError)
+    }).catch((err: Error) => {
+      console.log(err)
+    })
   };
 
   useEffect(() => {
@@ -31,6 +62,7 @@ const SignUp:React.FunctionComponent = () => {
             <link rel="icon" href="/favicon.ico" />
           </Head>
           <strong className="signup-title">Sign up</strong>
+          {displayError ? 'Username/Email is already taken' : ''}
           <Form
             form={form}
             name="register"
@@ -49,6 +81,29 @@ const SignUp:React.FunctionComponent = () => {
                 {
                   required: true,
                   message: 'Please input your E-mail!',
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            
+            <Form.Item
+              name="username"
+              label={
+                (
+                  <span>
+                    Username&nbsp;
+                    <Tooltip title="What do you want others to call you?">
+                      <QuestionCircleOutlined />
+                    </Tooltip>
+                  </span>
+                  )
+              }
+              rules={[
+                {
+                  required: true,
+                  message: 'Please input your username!',
+                  whitespace: true,
                 },
               ]}
             >
@@ -91,29 +146,6 @@ const SignUp:React.FunctionComponent = () => {
               ]}
             >
               <Input.Password />
-            </Form.Item>
-
-            <Form.Item
-              name="nickname"
-              label={
-                (
-                  <span>
-                    Nickname&nbsp;
-                    <Tooltip title="What do you want others to call you?">
-                      <QuestionCircleOutlined />
-                    </Tooltip>
-                  </span>
-                  )
-              }
-              rules={[
-                {
-                  required: true,
-                  message: 'Please input your nickname!',
-                  whitespace: true,
-                },
-              ]}
-            >
-              <Input />
             </Form.Item>
 
             <Form.Item

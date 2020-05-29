@@ -18,6 +18,33 @@ const Login:React.FunctionComponent = () => {
 
   const onFinish = (values) => {
     console.log('Received values of form: ', values);
+
+    const { username, password } = values;
+    const form= new FormData()
+    form.append('username', username);
+    form.append('password', password);
+
+    const config= {
+      method: "POST",
+      body: form
+    }
+
+    fetch('http://localhost:3000/api/login', config).then((res: any) => {
+      
+      if(res.status === 200) {
+        // Router.push('/');
+        return res.json();
+      }
+      
+      return res.text()
+
+      
+    }).then(data => {
+      console.log(data)
+      localStorage.setItem('token', data.token);
+    }).catch((err: Error) => {
+      console.log(err)
+    })
   };
 
   return (
