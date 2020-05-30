@@ -10,15 +10,15 @@ export const config = {
 
 const handler = nextConnect();
 cloudinary.config({ 
-    cloud_name: 'dzeqj2xv1', 
-    api_key: '941628444336851', 
-    api_secret: 'HVkGg6mMHPHPWhyESCdYch6Gaqo' 
+    cloud_name: process.env.CLOUDINARY_NAME, 
+    api_key: process.env.CLOUDINARY_API_KEY, 
+    api_secret: process.env.CLOUDINARY_SECRET 
   });
 
 handler
   .post((req, res) => {
     const form = new formidable.IncomingForm();
-    form.parse(req, (err, fields, files) => {
+    form.parse(req, (err, fields, files) => { 
       if(err) {
         console.log(err);
         throw err;
