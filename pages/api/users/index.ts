@@ -1,10 +1,14 @@
-import nextConnect from "next-connect";
+import {NextApiRequest, NextApiResponse} from 'next';
+import nextConnect, {NextHandler} from "next-connect";
 import db from '../../../middlewares/database';
 import jwt from 'jsonwebtoken';
 
 const handler = nextConnect();
 
-const Authenticate = (req, res, next) => {
+const Authenticate = (
+  req: NextApiRequest, 
+  res: NextApiResponse, 
+  next: NextHandler) => {
 
   jwt.verify(req.cookies.auth, process.env.JWT_SECRET, async function(err, decoded) {
     if (!err && decoded) {

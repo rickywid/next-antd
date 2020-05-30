@@ -2,7 +2,8 @@ import nextConnect from "next-connect";
 import db from '../../../middlewares/database';
 import formidable from "formidable";
 import bcrypt from "bcrypt-nodejs";
-import jwt from"jwt-simple";
+import generateToken from '../../../lib/generateToken';
+
 const handler = nextConnect();
  
 export const config = {
@@ -11,19 +12,17 @@ export const config = {
   },
 };
 
-const generateToken = () => {
-  const timeStamp = new Date().getTime();
-  return jwt.encode({
-    sub: 1,
-    iat: timeStamp
-  }, 'somesecretstring')
+interface IFields {
+  username: string;
+  email: string;
+  password: string;
 }
 
 handler
   .post((req, res) => {   
     const form = new formidable.IncomingForm();
     form.parse(req, (err, fields) => {
-      const { username, email, password } = fields;
+      const { username, email, password }: IFields = fields as any as IFields;;
 
       if(err) {
         console.log(err);
@@ -67,7 +66,7 @@ handler
               
               res.json({
                 id: userID,
-                token: generateToken()
+                token: generateToken(username)
               })
             })
           });          

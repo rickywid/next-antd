@@ -1,3 +1,4 @@
+import {NextApiRequest, NextApiResponse} from 'next';
 import nextConnect from "next-connect";
 import db from '../../../middlewares/database';
 import formidable from "formidable";
@@ -11,7 +12,9 @@ export const config = {
 };
 
 handler
-  .get((req, res) => {
+  .get((
+    req: NextApiRequest, 
+    res: NextApiResponse) => {
       db.query(`
       select 
       projects.name,
@@ -39,15 +42,30 @@ handler
 	    res.json({data: result.rows} );
 	  })
   })
-  .post((req, res) => {
+  .post((
+    req: NextApiRequest, 
+    res: NextApiResponse) => {
     const form = new formidable.IncomingForm();
-    form.parse(req, (err, fields, files) => {
+    form.parse(req, (err, fields) => {
       if(err) {
         console.log(err);
         throw err;
       }
 
-      const { name, description, tagline, url, technologies, tags, collaboration, screenshots, user_id } = fields;
+      interface IFields {
+        name: string;
+        description: string;
+        tagline: string;
+        url: string;
+        technologies: string;
+        tags: string;
+        collaboration: boolean;
+        screenshots: string;
+        user_id: string;
+        Fields?: any
+      }
+
+      const { name, description, tagline, url, technologies, tags, collaboration, screenshots, user_id }: IFields = fields as any as IFields;;
 
 
       const tagsArr = tags.split(',').map(num => parseInt(num));
@@ -71,8 +89,5 @@ handler
       })
     });
   })
-  .put(async (req, res) => {
-    res.end('async/await is also supported!');
-  });
  
 export default handler;

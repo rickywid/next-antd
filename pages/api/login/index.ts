@@ -1,4 +1,5 @@
-import nextConnect from "next-connect";
+import {NextApiRequest, NextApiResponse} from 'next';
+import nextConnect, {NextHandler} from "next-connect";
 import db from '../../../middlewares/database';
 import formidable from "formidable";
 import bcrypt from "bcrypt-nodejs";
@@ -6,6 +7,11 @@ import cookie from 'cookie';
 import generateToken from '../../../lib/generateToken';
 
 const handler = nextConnect();
+
+interface IFields {
+  username: string;
+  password: string;
+}
  
 export const config = {
   api: {
@@ -14,11 +20,15 @@ export const config = {
 };
 
 handler
-  .post((req, res, next) => {   
+  .post((
+    req: NextApiRequest, 
+    res: NextApiResponse, 
+    next:NextHandler) => {   
     const form = new formidable.IncomingForm();
 
     form.parse(req, (err, fields) => {
-      const { username, password } = fields;
+      const { username, password }: IFields = fields as any as IFields;
+      
       const token = generateToken(username.toString());
 
       if(err) {

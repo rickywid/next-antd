@@ -11,10 +11,14 @@ import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import Layout from '../../components/layout';
 import './login.less';
 
+interface IFormValues {
+  username: string;
+  password:string;
+}
 const Login:React.FunctionComponent = () => {
 
-  const onFinish = (values) => {
-    const { username, password } = values;
+  const onFinish = (values:IFormValues) => {
+    const { username, password }: IFormValues = values;
     const form= new FormData()
     form.append('username', username);
     form.append('password', password);
