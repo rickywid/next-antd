@@ -35,7 +35,7 @@ handler
       on tags.id = projects_tags.tag_id
       where projects_tags.project_id = projects.id) as tags
     from projects;
-      `, (err, result) => {
+      `, (err: any, result: { rows: any; }) => {
 	    if (err) {
 	      return console.log(err)
 	    }
@@ -62,7 +62,6 @@ handler
         collaboration: boolean;
         screenshots: string;
         user_id: string;
-        Fields?: any
       }
 
       const { name, description, tagline, url, technologies, tags, collaboration, screenshots, user_id }: IFields = fields as any as IFields;;

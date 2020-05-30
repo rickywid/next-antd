@@ -5,7 +5,6 @@ import Head from 'next/head';
 import ProjectMain from '../../../components/projects-main';
 import Layout from '../../../components/layout';
 import './upload-project.module.less';
-
 import {
   Form,
   Input,
@@ -18,7 +17,40 @@ import {
 } from 'antd';
 import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 
-const { Option } = Select;
+interface IFormLayoutChange {
+  size: string;
+}
+
+interface ISelectChange {
+  value: string[];
+}
+
+interface IUploadChange {
+  fileList: string[];
+}
+
+interface IHandleRemove {
+  info: {uid: string};
+  fileList: [{uid: string}];
+}
+
+interface IHandlePreview {
+  url: string;
+  preview: string;
+  originFileObj: Blob;
+  name: string;
+}
+
+interface IFields {
+  name: string;
+  description: string;
+  tagline: string;
+  url: string;
+  technologies: string;
+  tags: string;
+  collaboration: string;
+}
+
 
 const UploadProject:NextPage = () => {
   useEffect(() => {
@@ -28,30 +60,19 @@ const UploadProject:NextPage = () => {
   }, []);
 
   const [componentSize, setComponentSize] = useState('medium');
-  const [technologiesSelect, setTechnologiesSelect] = useState([]);
-  const [tagSelect, setTagSelect] = useState([]);
+  const [technologiesSelect, setTechnologiesSelect] = useState<string[]>([]);
+  const [tagSelect, setTagSelect] = useState<string[]>([]);
   const [previewVisible, setPreviewVisible] = useState<boolean>(false);
   const [previewImage, setPreviewImage] = useState<string>('');
   const [previewTitle, setPreviewTitle] = useState<string>('');
-  const [fileList, setFileList] = useState<any[]>([]);              // list of files uploaded locally used by antd
-  const [fileListUpload, setFileListUpload] = useState<any[]>([]);  // list of files uploaded to cloduinary
+  const [fileList, setFileList] = useState<string[]>([]);              // list of files uploaded locally used by antd
+  const [fileListUpload, setFileListUpload] = useState<any[]>([]);    // list of files uploaded to cloduinary
   const [inputName, setInputName] = useState<string>('');
   const [inputTagline, setInputTagline] = useState<string>('');
   const [inputWebsite, setInputWebsite] = useState<string>('');
   const [inputDesc, setInputDesc] = useState<string>('');
 
-  const onFormLayoutChange = ({ size, collaboration }) => {
-    setComponentSize(size);
-  };
-
-  const getBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = error => reject(error);
-    });
-  }
+  const { Option } = Select;
 
   const technologies = ['React', 'Angular', 'ASP.NET', 'Node/Express', 'Vue', 'Django','Flask', 'Laravel', 'Ruby on Rails', 'Drupal'];
   const childrenTech = [];
@@ -64,21 +85,32 @@ const UploadProject:NextPage = () => {
     childrenTags.push(<Option key={i} value={i+1}>{tags[i]}</Option>);
   }
 
-  const onSelectTechnologyChange = (value) => {
-    setTechnologiesSelect(value);
+  const onFormLayoutChange = ({size}: IFormLayoutChange) => {
+    setComponentSize(size);
+  };
 
+  const getBase64 = (file: Blob) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+    });
   }
 
-  const onSelectTagChange = (value) => {
+  const onSelectTechnologyChange = ({value}: ISelectChange) => {
+    setTechnologiesSelect(value);
+  }
+
+  const onSelectTagChange = ({value}: ISelectChange) => {
     setTagSelect(value);
-  
   }
 
   const handleCancel = () => setPreviewVisible(false);
 
-  const handlePreview = async file => {
+  const handlePreview = async (file: IHandlePreview) => {
     if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj);
+      file.preview = await getBase64(file.originFileObj) as string;
     }
 
     setPreviewTitle(file.name);
@@ -86,8 +118,8 @@ const UploadProject:NextPage = () => {
     setPreviewVisible(true);
   }
 
-  const handleOnRemove = (info) => {
-    let antdIndexPos = null;
+  const handleOnRemove = ({info, fileList}:IHandleRemove) => {
+    let antdIndexPos:number | null = null;
     const removedFileUID = info.uid;
 
     for(let i = 0; i < fileList.length; i++) {
@@ -96,16 +128,16 @@ const UploadProject:NextPage = () => {
       }
     }
 
-    setFileListUpload([fileListUpload.slice(0, antdIndexPos).concat(fileListUpload.slice(antdIndexPos+1))]);
+    setFileListUpload([fileListUpload.slice(0, antdIndexPos!).concat(fileListUpload.slice(antdIndexPos!+1))]);
   }
 
-  const handleOnFinish = (values) => {
-    const { name, description, tagline, website, technologies, tags, collaboration } = values;
+  const handleOnFinish = (values: IFields) => {
+    const { name, description, tagline, url, technologies, tags, collaboration } = values;
     const form= new FormData()
     form.append('name', name);
     form.append('description', description);
     form.append('tagline', tagline);
-    form.append('url', website);
+    form.append('url', url);
     form.append('technologies', technologies);
     form.append('tags', tags);
     form.append('collaboration', collaboration);
@@ -126,11 +158,11 @@ const UploadProject:NextPage = () => {
     })	
   }
 
-  const handleUploadChange = ({ fileList }) => {
+  const handleUploadChange = ({fileList}: IUploadChange) => {
     setFileList(fileList)
   };
 
-  const customRequest = file => {
+  const customRequest = (file: { file: string | Blob; onProgress: (arg0: (e: any) => void) => void; onSuccess: (arg0: (e: any) => void) => void; }) => {
 			const data= new FormData()
 			data.append('file', file.file)
 			const config= {
@@ -181,8 +213,8 @@ const UploadProject:NextPage = () => {
                 technologies: [],
                 tags: []
               }}
-              onFinish={handleOnFinish}
-              onValuesChange={onFormLayoutChange}
+              onFinish={handleOnFinish as any}
+              onValuesChange={onFormLayoutChange as any}
             >
             <Form.Item 
               label="Project Name" 
@@ -216,7 +248,7 @@ const UploadProject:NextPage = () => {
             </Form.Item>
             <Form.Item 
               label="Website" 
-              name="website" 
+              name="url" 
               rules={[{required: true, message:'Required'}]}
             >
               <Input 
@@ -229,7 +261,7 @@ const UploadProject:NextPage = () => {
                 mode="multiple"
                 style={{ width: '100%' }}
                 placeholder="Please select"
-                onChange={onSelectTechnologyChange}
+                onChange={onSelectTechnologyChange as any}
               >
                 {childrenTech}
               </Select>
@@ -239,7 +271,7 @@ const UploadProject:NextPage = () => {
                 mode="multiple"
                 style={{ width: '100%' }}
                 placeholder="Please select"
-                onChange={onSelectTagChange}
+                onChange={onSelectTagChange as any}
               >
                 {childrenTags}
               </Select>
@@ -259,11 +291,11 @@ const UploadProject:NextPage = () => {
               <div className="clearfix">
                 <Upload
                   listType="picture-card"
-                  fileList={fileList}
-                  onPreview={handlePreview}
-                  onChange={handleUploadChange}
-                  onRemove={handleOnRemove}
-                  customRequest={customRequest}
+                  fileList={fileList as any[]}
+                  onPreview={handlePreview as any}
+                  onChange={handleUploadChange as any}
+                  onRemove={handleOnRemove as any}
+                  customRequest={customRequest as any}
                 >
                   {fileList.length >= 4 ? null : uploadButton}
                 </Upload>

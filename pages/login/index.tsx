@@ -28,15 +28,12 @@ const Login:React.FunctionComponent = () => {
       body: form
     }
 
-    fetch('http://localhost:3000/api/login', config).then((res: any) => {
+    fetch('http://localhost:3000/api/login', config).then((res) => {
       
       if(res.status === 200) {
         return res.json();
       }
-      
       return res.text()
-
-      
     }).then(data => {
       localStorage.setItem('token', data.token);
     }).catch((err: Error) => {
@@ -59,7 +56,7 @@ const Login:React.FunctionComponent = () => {
             initialValues={{
               remember: true,
             }}
-            onFinish={onFinish}
+            onFinish={onFinish as any}
           >
             <Form.Item
               name="username"
@@ -93,6 +90,7 @@ const Login:React.FunctionComponent = () => {
               </Form.Item>
 
               <Link href="/reset-password">
+                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid*/}
                 <a className="login-form-forgot">Forgot password</a>
               </Link>
             </Form.Item>
@@ -103,6 +101,7 @@ const Login:React.FunctionComponent = () => {
               </Button>
               Or
               <Link href="/register">
+                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid*/}
                 <a> Register</a>
               </Link>
             </Form.Item>
