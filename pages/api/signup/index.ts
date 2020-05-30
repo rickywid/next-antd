@@ -31,6 +31,12 @@ handler
       }
 
       // check if username/email exists
+      // create new user
+      // generate salt
+      // hash(encrypt) our password using the salt
+      // execute sql query 
+
+
       db.query(`
       SELECT * 
       FROM users
@@ -45,15 +51,11 @@ handler
           res.status(400).send('Email or username is already taken');
         }
 
-        // create new user
-
-        // generate salt
         bcrypt.genSalt(10, (err, salt) => {
-          // hash(encrypt) our password using the salt
+          
           bcrypt.hash(password, salt, null, async (err, hash) => {
             if(err) console.log(err);
 
-            // execute sql query 
             db.query(`
               INSERT INTO users (name, email, password)
               VALUES ($1, $2, $3)
@@ -61,11 +63,8 @@ handler
             `, [username, email, hash], (err, result) => {
               if(err) console.log(err);
               
-              
               const userID = result.rows[0].id;
               
-              // generate jwt token
-              // return token back to client
               res.json({
                 id: userID,
                 token: generateToken()

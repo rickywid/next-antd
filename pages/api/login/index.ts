@@ -28,7 +28,6 @@ handler
         throw err;
       }
 
-      // check if username/password
       db.query(`
         SELECT * FROM users
         WHERE username = $1;
@@ -41,10 +40,8 @@ handler
           res.status(400).send('Username not found');
         }
 
-        // compare password
         const user = result.rows[0];
       
-        // if user found, compare password  
         bcrypt.compare(password, user.password, function(err, isMatch) {
           if(err || !isMatch) {
             res.json({message: 'Username or password incorrect'});

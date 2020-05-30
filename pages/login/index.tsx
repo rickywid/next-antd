@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
 import {
@@ -12,13 +12,8 @@ import Layout from '../../components/layout';
 import './login.less';
 
 const Login:React.FunctionComponent = () => {
-  useEffect(() => {
-    console.log('Login mounted');
-  });
 
   const onFinish = (values) => {
-    console.log('Received values of form: ', values);
-
     const { username, password } = values;
     const form= new FormData()
     form.append('username', username);
@@ -32,7 +27,6 @@ const Login:React.FunctionComponent = () => {
     fetch('http://localhost:3000/api/login', config).then((res: any) => {
       
       if(res.status === 200) {
-        // Router.push('/');
         return res.json();
       }
       
@@ -40,7 +34,6 @@ const Login:React.FunctionComponent = () => {
 
       
     }).then(data => {
-      console.log(data)
       localStorage.setItem('token', data.token);
     }).catch((err: Error) => {
       console.log(err)

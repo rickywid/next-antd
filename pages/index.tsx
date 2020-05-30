@@ -15,8 +15,6 @@ import fetch from 'isomorphic-fetch';
 const Home: NextPage = ({projects}:{children?: React.ReactNode, projects: IProject[]}) => {
   const onFormLayoutChange = ({ filter }) => {
     console.log(filter);
-
-    // DB Query to filter results based on selected option
   };
 
   return (

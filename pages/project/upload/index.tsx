@@ -22,7 +22,6 @@ const { Option } = Select;
 
 const UploadProject:NextPage = () => {
   useEffect(() => {
-    console.log('upload mounted');
     if(localStorage.getItem('token') === null) {
       Router.replace('/');
     }
@@ -91,14 +90,12 @@ const UploadProject:NextPage = () => {
     let antdIndexPos = null;
     const removedFileUID = info.uid;
 
-    // get index of antd uploaded file reference
     for(let i = 0; i < fileList.length; i++) {
       if(fileList[i].uid === removedFileUID) {
         antdIndexPos = i;
       }
     }
 
-    // remove uploaded file at index position of local file
     setFileListUpload([fileListUpload.slice(0, antdIndexPos).concat(fileListUpload.slice(antdIndexPos+1))]);
   }
 
@@ -127,10 +124,6 @@ const UploadProject:NextPage = () => {
     }).catch((err: Error) => {
       console.log(err)
     })	
-  }
-
-  const handleOnFinishFailed = (values) => {
-    console.log(values);
   }
 
   const handleUploadChange = ({ fileList }) => {
@@ -189,7 +182,6 @@ const UploadProject:NextPage = () => {
                 tags: []
               }}
               onFinish={handleOnFinish}
-              onFinishFailed={handleOnFinishFailed}
               onValuesChange={onFormLayoutChange}
             >
             <Form.Item 
@@ -306,11 +298,5 @@ const UploadProject:NextPage = () => {
     </Layout>
   );
 };
-
-// UploadProject.getInitialProps = async (ctx) => {
-//   console.log(localStorage.getItem('token'));
-
-//   return {};
-// }
 
 export default UploadProject;

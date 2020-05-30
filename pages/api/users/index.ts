@@ -5,10 +5,8 @@ import jwt from 'jsonwebtoken';
 const handler = nextConnect();
 
 const Authenticate = (req, res, next) => {
-  console.log('asdfsadfa')
 
   jwt.verify(req.cookies.auth, 'somesecretstring', async function(err, decoded) {
-    console.log('decoded', decoded)
     if (!err && decoded) {
       return next();  
     }

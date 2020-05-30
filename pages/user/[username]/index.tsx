@@ -1,13 +1,9 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import Head from 'next/head';
 import Layout from '../../../components/layout';
 import styles from './user.module.css';
 
 const UserProfile:React.FunctionComponent = () => {
-  useEffect(() => {
-    console.log('user profile mounted');
-  });
-
   return (
     <Layout>
       <div className={styles.container}>

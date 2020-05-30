@@ -36,8 +36,6 @@ handler
 	    if (err) {
 	      return console.log(err)
 	    }
-	    console.log(result)
-	    // data = result;
 	    res.json({data: result.rows} );
 	  })
   })
@@ -56,8 +54,6 @@ handler
       const technologiesArr = technologies.split(',').map(num => parseInt(num));;
       const screenshotsArr = screenshots.split(',');
 
-      console.log(typeof(technologiesArr))
-      console.log(tagsArr)      // projects_technologies table
       db.query(`
           WITH
             t1 AS (INSERT INTO projects(name, description, tagline, url, collaboration, user_id, images) 
@@ -71,8 +67,6 @@ handler
           return console.log(err)
         }
         
-        console.log(result)
-        // data = result;
         res.json({status: 200});
       })
     });

@@ -1,6 +1,5 @@
-import React, { useEffect, useState} from 'react';
+import React, { useState} from 'react';
 import Head from 'next/head';
-import Router from 'next/router';
 import './signup.less';
 import {
   Form,
@@ -17,8 +16,6 @@ const SignUp:React.FunctionComponent = () => {
   const [displayError, setDisplayError] = useState(false);
 
   const onFinish = (values) => {
-    console.log('Received values of form: ', values);
-
     const { username, email, password } = values;
     const form= new FormData()
     form.append('username', username);
@@ -33,7 +30,6 @@ const SignUp:React.FunctionComponent = () => {
     fetch('http://localhost:3000/api/signup', config).then((res: any) => {
       
       if(res.status === 200) {
-        // Router.push('/');
         return res.json();
       }
       
@@ -41,17 +37,12 @@ const SignUp:React.FunctionComponent = () => {
 
       
     }).then(data => {
-      console.log(data)
       localStorage.setItem('token', data.token);
       setDisplayError(!displayError)
     }).catch((err: Error) => {
       console.log(err)
     })
   };
-
-  useEffect(() => {
-    console.log('signup mounted');
-  });
 
   return (
     <Layout>

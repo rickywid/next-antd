@@ -25,7 +25,6 @@ interface IProps {
 }
 
 const ProjectsMain:NextPage<IProps> = ({ projects }) => {
-  console.log(projects)
   const renderTechnologies =  (technology) => {
     return <li><Tag color="magenta">{technology}</Tag></li>
   };
