@@ -2,8 +2,8 @@ import nextConnect from "next-connect";
 import db from '../../../middlewares/database';
 import formidable from "formidable";
 import bcrypt from "bcrypt-nodejs";
-import jwt from "jsonwebtoken";
 import cookie from 'cookie';
+import generateToken from '../../../lib/generateToken';
 
 const handler = nextConnect();
  
@@ -13,15 +13,13 @@ export const config = {
   },
 };
 
-const generateToken = () => {
-  return jwt.sign({foo: 'bar'}, 'somesecretstring');
-}
-
 handler
   .post((req, res, next) => {   
     const form = new formidable.IncomingForm();
+
     form.parse(req, (err, fields) => {
       const { username, password } = fields;
+      const token = generateToken(username.toString());
 
       if(err) {
         console.log(err);
@@ -47,9 +45,7 @@ handler
             res.json({message: 'Username or password incorrect'});
             next();
            }
-
-           const token = generateToken();
-
+           
            res.setHeader('Set-Cookie', cookie.serialize('auth', token, {
              httpOnly: true,
              secure: process.env.NODE_ENV !== 'development',

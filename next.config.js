@@ -3,6 +3,7 @@ const withLess = require('@zeit/next-less')
 const lessToJS = require('less-vars-to-js')
 const fs = require('fs')
 const path = require('path')
+require('dotenv').config();
 
 // Where your antd-custom.less file lives
 const themeVariables = lessToJS(
@@ -37,4 +38,10 @@ module.exports = withLess({
     }
     return config
   },
+  env: {
+    DB_USER: process.env.DB_USER,
+    DB_PASS: process.env.DB_PASS,
+    DB_NAME: process.env.DB_NAME,
+    JWT_SECRET: process.env.JWT_SECRET
+  }
 })

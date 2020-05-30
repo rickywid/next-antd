@@ -6,7 +6,7 @@ const handler = nextConnect();
 
 const Authenticate = (req, res, next) => {
 
-  jwt.verify(req.cookies.auth, 'somesecretstring', async function(err, decoded) {
+  jwt.verify(req.cookies.auth, process.env.JWT_SECRET, async function(err, decoded) {
     if (!err && decoded) {
       return next();  
     }
