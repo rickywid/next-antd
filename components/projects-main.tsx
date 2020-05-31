@@ -1,40 +1,25 @@
-import React, { useEffect } from 'react';
+import React, { ReactNode } from 'react';
 import { NextPage } from 'next'
 import './styles/projects-main.less';
 import { Tag } from 'antd';
 import { CommentOutlined, DesktopOutlined } from '@ant-design/icons';
 
-interface IProject {
-  id: number;
-  name: string;
-  description: string;
-  tagline: string;
-  url: string;
-  technologies: string[] | [];
-  tags: string[] | [];
-  collaboration: boolean;
-  created_on: string;
-  user_id: number;
-  images: string[];
-
-}
-
 interface IProps {
-  children?: React.ReactNode,
-  projects: IProject[]
+  children?: ReactNode,
+  projects?: any
 }
 
 const ProjectsMain:NextPage<IProps> = ({ projects }) => {
-  const renderTechnologies =  (technology) => {
+  const renderTechnologies =  (technology: string) => {
     return <li><Tag color="magenta">{technology}</Tag></li>
   };
 
-  const renderTags =  (tag) => {
+  const renderTags =  (tag: string) => {
     return <li><Tag color="blue">{tag}</Tag></li>
   };
 
   const renderProjects = () => {
-    return projects.map(project => (
+    return projects.map((project: any) => (
       <div className="project-card" key={project.id}>
         <div className="project-card-left">
           <img className="img" src={project.images[0]} alt=""/>

@@ -1,17 +1,22 @@
-import React from 'react';
-import { NextPage } from 'next';
+import React, { ReactNode } from 'react';
+import { NextPage, NextPageContext } from 'next';
 import Router from 'next/router';
 import Layout from '../../components/layout';
 
-const Users:NextPage = ({people}) => {
-return <Layout><div>users page {JSON.stringify(people)}</div></Layout>
+interface IUsers {
+    children?: ReactNode;
+    projects?: [];
 }
 
-Users.getInitialProps = async (ctx) => {
-    const cookie = ctx.req?.headers.cookie;
+const Users:NextPage = ({projects}:IUsers) => {
+return <Layout><div>users page {JSON.stringify(projects)}</div></Layout>
+}
+
+Users.getInitialProps = async (ctx: NextPageContext) => {
+    const cookie = ctx.req!.headers.cookie;
 
     const response = await fetch('http://localhost:3000/api/users', {
-        headers: { cookie }
+        headers: { cookie } as any
     });
 
     // client side rendering
@@ -22,16 +27,16 @@ Users.getInitialProps = async (ctx) => {
 
     // server side rendering
     if(response.status === 401 && ctx.req) {
-        ctx.res.writeHead(302, {
+        ctx.res!.writeHead(302, {
             Location: 'http://localhost:3000/login'
         });
 
-        ctx.res.end();
+        ctx.res!.end();
         return;
     }
 
-    const json = await response.text();
-    return { people: json };
+    const projects = await response.text();
+    return { projects };
 }
 
 export default Users;

@@ -12,8 +12,8 @@ import {
 } from 'antd';
 import fetch from 'isomorphic-fetch';
 
-const Home: NextPage = ({projects}:{children?: React.ReactNode, projects: IProject[]}) => {
-  const onFormLayoutChange = ({ filter }) => {
+const Home: NextPage = ({projects}:{children?: React.ReactNode, projects?: []}) => {
+  const onFormLayoutChange = ({ filter }: []) => {
     console.log(filter);
   };
 
@@ -30,7 +30,7 @@ const Home: NextPage = ({projects}:{children?: React.ReactNode, projects: IProje
           wrapperCol={{ span: 6, offset: 18 }}
           layout="vertical"
           initialValues={{ filter: "recent" }}
-          onValuesChange={onFormLayoutChange}
+          onValuesChange={onFormLayoutChange as any}
         >
           <Form.Item name="filter" label="" initialValue="recent">
             <Select>
@@ -48,10 +48,10 @@ const Home: NextPage = ({projects}:{children?: React.ReactNode, projects: IProje
   )
 };
 
-export const getServerSideProps: GetServerSideProps<{projects: IProject[]}> = async context => {
-  return fetch('http://localhost:3000/api/projects').then(res=>{
+export const getServerSideProps: GetServerSideProps<{projects: []}> = async context => {
+  return fetch('http://localhost:3000/api/projects').then((res: any)=>{
     return res.json();
-  }).then(projects=>{
+  }).then((projects: any) =>{
     return {props: { projects: projects.data }}
   });
 }

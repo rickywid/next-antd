@@ -11,6 +11,7 @@
     "@types/bcrypt-nodejs": "0.0.31",
     "@types/cookie": "^0.4.0",
     "@types/formidable": "^1.0.31",
+    "@types/isomorphic-fetch": "0.0.35",
     "@types/jsonwebtoken": "^8.5.0",
     "@zeit/next-less": "^1.0.1",
     "antd": "^4.2.2",
