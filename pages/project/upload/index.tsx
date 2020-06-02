@@ -16,6 +16,7 @@ import {
   Tooltip
 } from 'antd';
 import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { ApiService } from '../../../lib/apiService';
 
 interface IFormLayoutChange {
   size: string;
@@ -59,6 +60,7 @@ const UploadProject:NextPage = () => {
     }
   }, []);
 
+  const api = new ApiService();
   const [componentSize, setComponentSize] = useState('medium');
   const [technologiesSelect, setTechnologiesSelect] = useState<string[]>([]);
   const [tagSelect, setTagSelect] = useState<string[]>([]);
@@ -131,9 +133,9 @@ const UploadProject:NextPage = () => {
     setFileListUpload([fileListUpload.slice(0, antdIndexPos!).concat(fileListUpload.slice(antdIndexPos!+1))]);
   }
 
-  const handleOnFinish = (values: IFields) => {
+  const handleOnFinish = async (values: IFields) => {
     const { name, description, tagline, url, technologies, tags, collaboration } = values;
-    const form= new FormData()
+    const form = new FormData()
     form.append('name', name);
     form.append('description', description);
     form.append('tagline', tagline);
@@ -144,18 +146,10 @@ const UploadProject:NextPage = () => {
     form.append('screenshots', fileListUpload);
     form.append('user_id', '1');
 
-    const config= {
-      method: "POST",
-      body: form
+    const res = await api.createProject(form);
+    if(res.status === 200) {
+      Router.push('/');
     }
-
-    fetch('http://localhost:3000/api/projects', config).then((res: any) => {
-      if(res.status === 200) {
-        Router.push('/');
-      }
-    }).catch((err: Error) => {
-      console.log(err)
-    })	
   }
 
   const handleUploadChange = ({fileList}: IUploadChange) => {
@@ -256,7 +250,11 @@ const UploadProject:NextPage = () => {
                 onChange={(e)=> setInputWebsite(e.target.value)}
               />
             </Form.Item>
-            <Form.Item label="Technologies" name="technologies">
+            <Form.Item 
+              label="Technologies" 
+              name="technologies"
+              rules={[{required: true, message:'Must select at least one'}]}
+            >
               <Select
                 mode="multiple"
                 style={{ width: '100%' }}
@@ -266,7 +264,11 @@ const UploadProject:NextPage = () => {
                 {childrenTech}
               </Select>
             </Form.Item>
-            <Form.Item label="Tags" name="tags">
+            <Form.Item 
+              label="Tags" 
+              name="tags"
+              rules={[{required: true, message:'Must select at least one'}]}
+            >
               <Select
                 mode="multiple"
                 style={{ width: '100%' }}

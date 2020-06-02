@@ -11,16 +11,16 @@ interface IProps {
 
 const ProjectsMain:NextPage<IProps> = ({ projects }) => {
   const renderTechnologies =  (technology: string) => {
-    return <li><Tag color="magenta">{technology}</Tag></li>
+    return <li key={technology}><Tag color="magenta">{technology}</Tag></li>
   };
 
   const renderTags =  (tag: string) => {
-    return <li><Tag color="blue">{tag}</Tag></li>
+    return <li key={tag}><Tag color="blue">{tag}</Tag></li>
   };
 
   const renderProjects = () => {
-    return projects.map((project: any) => (
-      <div className="project-card" key={project.id}>
+    return projects.map((project: any, index: number) => (
+      <li className="project-card" key={index}>
         <div className="project-card-left">
           <img className="img" src={project.images[0]} alt=""/>
           <div className="project-detail">
@@ -44,13 +44,16 @@ const ProjectsMain:NextPage<IProps> = ({ projects }) => {
         <div className="project-card-right">
          <p>20</p>
         </div>
-      </div>
+      </li>
     ))
   }
 
   return (
     <div>
-      {renderProjects()}
+      <ul>
+        {renderProjects()}
+      </ul>
+      
     </div>
   );
 };

@@ -2,7 +2,6 @@ import {NextApiRequest, NextApiResponse} from 'next';
 import nextConnect from "next-connect";
 import db from '../../../middlewares/database';
 import formidable from "formidable";
-
 const handler = nextConnect();
  
 export const config = {
@@ -45,9 +44,11 @@ handler
   .post((
     req: NextApiRequest, 
     res: NextApiResponse) => {
+      
     const form = new formidable.IncomingForm();
     form.parse(req, (err, fields) => {
       if(err) {
+        console.log('errr')
         console.log(err);
         throw err;
       }
@@ -63,9 +64,7 @@ handler
         screenshots: string;
         user_id: string;
       }
-
-      const { name, description, tagline, url, technologies, tags, collaboration, screenshots, user_id }: IFields = fields as any as IFields;;
-
+      const { name, description, tagline, url, technologies, tags, collaboration, screenshots, user_id }: IFields = fields as any as IFields;
 
       const tagsArr = tags.split(',').map(num => parseInt(num));
       const technologiesArr = technologies.split(',').map(num => parseInt(num));;

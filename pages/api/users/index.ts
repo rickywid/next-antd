@@ -23,7 +23,7 @@ handler
   .use(Authenticate)
   .get((req, res, next) => {   
       db.query(`SELECT * FROM users`, (err, result) => {
-          res.json({users: [{name: 'john'}]})
+          res.json({users: result.rows})
       })
   })
 

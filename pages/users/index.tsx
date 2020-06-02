@@ -2,6 +2,7 @@ import React, { ReactNode } from 'react';
 import { NextPage, NextPageContext } from 'next';
 import Router from 'next/router';
 import Layout from '../../components/layout';
+import { ApiService } from '../../lib/apiService';
 
 interface IUsers {
     children?: ReactNode;
@@ -15,9 +16,8 @@ return <Layout><div>users page {JSON.stringify(projects)}</div></Layout>
 Users.getInitialProps = async (ctx: NextPageContext) => {
     const cookie = ctx.req!.headers.cookie;
 
-    const response = await fetch('http://localhost:3000/api/users', {
-        headers: { cookie } as any
-    });
+    const api = new ApiService(cookie as string);
+    const response = await api.getUsers();
 
     // client side rendering
     if(response.status === 401 && !ctx.req) {
@@ -35,8 +35,8 @@ Users.getInitialProps = async (ctx: NextPageContext) => {
         return;
     }
 
-    const projects = await response.text();
-    return { projects };
+    const projects = await response.json();
+    return { projects: projects };
 }
 
 export default Users;
