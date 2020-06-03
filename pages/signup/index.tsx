@@ -1,4 +1,5 @@
 import React, { useState} from 'react';
+import Router from 'next/router';
 import Head from 'next/head';
 import './signup.less';
 import {
@@ -10,38 +11,28 @@ import {
 } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import Layout from '../../components/layout';
+import AuthService from '../../lib/authService';
 
 const SignUp:React.FunctionComponent = () => {
+  const api = new AuthService();
   const [form] = Form.useForm();
   const [displayError, setDisplayError] = useState(false);
 
-  const onFinish = (values) => {
+  const onFinish = async (values) => {
     const { username, email, password } = values;
     const form= new FormData()
     form.append('username', username);
     form.append('email', email);
     form.append('password', password);
 
-    const config= {
-      method: "POST",
-      body: form
-    }
+    const res = await api.signup(form);
+    const user = await res.json();
 
-    fetch('http://localhost:3000/api/signup', config).then((res: any) => {
-      
-      if(res.status === 200) {
-        return res.json();
-      }
-      
-      return res.text()
-
-      
-    }).then(data => {
-      localStorage.setItem('token', data.token);
+    if(user.isAuthenticated) {
+      Router.replace('/');
+    } else {
       setDisplayError(!displayError)
-    }).catch((err: Error) => {
-      console.log(err)
-    })
+    }
   };
 
   return (

@@ -1,15 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
+import Router from 'next/router';
 import Link from 'next/link';
 import Head from 'next/head';
 import {
   Form,
   Input,
   Button,
-  Checkbox,
+  Checkbox, 
 } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import Layout from '../../components/layout';
 import './login.less';
+import AuthService from '../../lib/authService';
 
 interface IFormValues {
   username: string;
@@ -17,28 +19,24 @@ interface IFormValues {
 }
 const Login:React.FunctionComponent = () => {
 
-  const onFinish = (values:IFormValues) => {
+  const api = new AuthService();
+  const [error, setError] = useState<boolean>(false)
+
+  const onFinish = async (values:IFormValues) => {
+
     const { username, password }: IFormValues = values;
     const form= new FormData()
     form.append('username', username);
     form.append('password', password);
 
-    const config= {
-      method: "POST",
-      body: form
+    const res = await api.login(form);
+    const user = await res.json();
+    
+    if(user.isAuthenticated) {
+      Router.replace('/');
+    } else {
+      setError(!error);
     }
-
-    fetch('http://localhost:3000/api/login', config).then((res) => {
-      
-      if(res.status === 200) {
-        return res.json();
-      }
-      return res.text()
-    }).then(data => {
-      localStorage.setItem('token', data.token);
-    }).catch((err: Error) => {
-      console.log(err)
-    })
   };
 
   return (
@@ -50,6 +48,7 @@ const Login:React.FunctionComponent = () => {
             <link rel="icon" href="/favicon.ico" />
           </Head>
           <strong className="login-title">Log in</strong>
+          <small>{error ? 'Username or password is incorrect': ''}</small>
           <Form
             name="normal_login"
             className="login-form"

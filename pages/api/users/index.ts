@@ -9,13 +9,13 @@ const Authenticate = (
   req: NextApiRequest, 
   res: NextApiResponse, 
   next: NextHandler) => {
-
-  jwt.verify(req.cookies.auth, process.env.JWT_SECRET, async function(err, decoded) {
+    
+  jwt.verify(req.cookies.token, process.env.JWT_SECRET!, async function(err, decoded) {
     if (!err && decoded) {
       return next();  
     }
 
-    res.status(401).json({ message: 'Sorry you are not authenticated' });
+    res.status(401).json({ message: 'Unauthorized' });
   });
 }
 
@@ -29,3 +29,4 @@ handler
 
  
 export default handler;
+   

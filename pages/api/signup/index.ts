@@ -3,6 +3,7 @@ import db from '../../../middlewares/database';
 import formidable from "formidable";
 import bcrypt from "bcrypt-nodejs";
 import generateToken from '../../../lib/generateToken';
+import cookie from 'cookie';
 
 const handler = nextConnect();
  
@@ -39,7 +40,7 @@ handler
       db.query(`
       SELECT * 
       FROM users
-      WHERE name = $1
+      WHERE username = $1
       OR email = $2
       `, [username, email], (err, result) => {
         if (err) {
@@ -47,7 +48,7 @@ handler
         }
 
         if (result.rows.length > 0) {
-          res.status(400).send('Email or username is already taken');
+          res.send({isAuthenticated: false});
         }
 
         bcrypt.genSalt(10, (err, salt) => {
@@ -56,18 +57,27 @@ handler
             if(err) console.log(err);
 
             db.query(`
-              INSERT INTO users (name, email, password)
+              INSERT INTO users (username, email, password)
               VALUES ($1, $2, $3)
               RETURNING id
             `, [username, email, hash], (err, result) => {
+              
               if(err) console.log(err);
-              
+
+              const token = generateToken(username.toString());
               const userID = result.rows[0].id;
-              
-              res.json({
-                id: userID,
-                token: generateToken(username)
-              })
+
+              res.setHeader('Set-Cookie', [ 
+                cookie.serialize('token', token, { 
+                httpOnly: true,
+                secure: process.env.NODE_ENV !== 'development',
+                sameSite: 'strict',
+                path: '/'
+              }), 
+                cookie.serialize('userID', userID) 
+              ]);
+
+              res.send({isAuthenticated: true});
             })
           });          
         })        

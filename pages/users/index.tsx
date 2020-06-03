@@ -14,7 +14,8 @@ return <Layout><div>users page {JSON.stringify(projects)}</div></Layout>
 }
 
 Users.getInitialProps = async (ctx: NextPageContext) => {
-    const cookie = ctx.req!.headers.cookie;
+    
+    const cookie = ctx.req?.headers.cookie;
 
     const api = new ApiService(cookie as string);
     const response = await api.getUsers();
@@ -25,7 +26,7 @@ Users.getInitialProps = async (ctx: NextPageContext) => {
         return;
     }
 
-    // server side rendering
+    // server side rendering 
     if(response.status === 401 && ctx.req) {
         ctx.res!.writeHead(302, {
             Location: 'http://localhost:3000/login'
@@ -37,6 +38,6 @@ Users.getInitialProps = async (ctx: NextPageContext) => {
 
     const projects = await response.json();
     return { projects: projects };
-}
+} 
 
 export default Users;

@@ -1,0 +1,41 @@
+import FormSerialize from './formSerialize';
+import { HttpClient } from './httpClient';
+
+class AuthService {
+    constructor() {
+        this.apiEndpoint = 'http://localhost:3000/api'
+    }
+
+    apiEndpoint: string;
+    headers = {
+        Accept: 'application/json',
+        'Content-Type': 'application/json; charset=utf-8'
+    }
+
+    login(credentials: any) {
+        const request = new Request(`
+            ${this.apiEndpoint}/login`, 
+            { 
+                headers: this.headers,
+                method: 'POST',
+                body: FormSerialize(credentials)
+            }
+        )
+        return HttpClient.makeRequest(request)
+    }
+
+    signup(credentials: any) {
+        const request = new Request(`
+            ${this.apiEndpoint}/signup`, 
+            { 
+                headers: this.headers,
+                method: 'POST',
+                body: FormSerialize(credentials)
+            }
+        )
+        return HttpClient.makeRequest(request)
+    }
+}
+
+export default AuthService;
+ 

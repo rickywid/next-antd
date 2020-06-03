@@ -28,7 +28,6 @@ handler
 
     form.parse(req, (err, fields) => {
       const { username, password }: IFields = fields as any as IFields;
-      
       const token = generateToken(username.toString());
 
       if(err) {
@@ -52,19 +51,22 @@ handler
       
         bcrypt.compare(password, user.password, function(err, isMatch) {
           if(err || !isMatch) {
-            res.json({message: 'Username or password incorrect'});
-            next();
+            res.send({isAuthenticated: false});
+            return next();
            }
            
-           res.setHeader('Set-Cookie', cookie.serialize('auth', token, {
-             httpOnly: true,
-             secure: process.env.NODE_ENV !== 'development',
-             sameSite: 'strict',
-             path: '/'
-           }));
+           res.setHeader('Set-Cookie', [ 
+            cookie.serialize('token', token, { 
+            httpOnly: true,
+            secure: process.env.NODE_ENV !== 'development',
+            sameSite: 'strict',
+            path: '/'
+          }), 
+            cookie.serialize('userID', user.id) 
+          ]);
            
-           res.json({message: 'ok'});
-           next();
+           res.send({isAuthenticated: true});
+           return next();
         });
         
       })
@@ -73,3 +75,4 @@ handler
 
  
 export default handler;
+ 

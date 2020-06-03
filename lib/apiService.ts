@@ -11,7 +11,7 @@ export class ApiService{
     private headers = {
         Accept: 'application/json',
         'Content-Type': 'application/json; charset=utf-8',
-        cookie: 'auth=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiamltIiwiaWF0IjoxNTkwODIzOTk1fQ.6njVxIvKsguyLE-t2aoePTtXNU98yDztk9ejo0Xd1Zo'
+        cookie: this.cookie
     }
 
     public async getUsers() {
@@ -21,11 +21,6 @@ export class ApiService{
         );
       }
 
-      // GET PROJECTS
-
-      // GET PROJECT
-
-      // CREATE PROJECT
       public async createProject(project: FormData) {
         return await HttpClient.post(
           `${this.apiEndpoint}/projects`,
@@ -33,7 +28,4 @@ export class ApiService{
           project
         );
       }
-      // UPLOAD IMAGE
-
-
 }
