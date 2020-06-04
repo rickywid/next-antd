@@ -54,11 +54,6 @@ interface IFields {
 
 
 const UploadProject:NextPage = () => {
-  useEffect(() => {
-    if(localStorage.getItem('token') === null) {
-      Router.replace('/');
-    }
-  }, []);
 
   const api = new ApiService();
   const [componentSize, setComponentSize] = useState('medium');

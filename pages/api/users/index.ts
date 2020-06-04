@@ -9,8 +9,8 @@ const Authenticate = (
   req: NextApiRequest, 
   res: NextApiResponse, 
   next: NextHandler) => {
-    
-  jwt.verify(req.cookies.token, process.env.JWT_SECRET!, async function(err, decoded) {
+
+    jwt.verify(req.cookies.token, process.env.JWT_SECRET!, async function(err, decoded) {
     if (!err && decoded) {
       return next();  
     }

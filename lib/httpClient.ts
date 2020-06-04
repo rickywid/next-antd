@@ -3,10 +3,10 @@ import FormSerialize from '../lib/formSerialize';
 export class HttpClient {
     public static async makeRequest(request: Request): Promise<Response> {
         const response = await fetch(request);
-
-        if(!response.ok && response.type) {
-            throw new Error(response.statusText);
-        }
+        // console.log(response)
+        // if(!response.ok) {
+        //     throw new Error(response.statusText);
+        // }
 
         return response;
     }

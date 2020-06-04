@@ -1,7 +1,9 @@
 import React from 'react';
+import { NextPage } from 'next';
 import { Layout, Menu } from 'antd';
 import { UploadOutlined, UserOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import Link from 'next/link';
+import AuthService from '../lib/authService';
 
 const { Sider } = Layout;
 
@@ -13,10 +15,10 @@ interface Props {
   upload: string;
 }
 
-const NavBar:React.FC<Props> = ({
-  root, username, signup, login, upload,
-}:Props):JSX.Element => {
-
+const NavBar: NextPage<Props> = ({
+  root, username, signup, login, upload
+}) => {
+  const api = new AuthService();
   return (
     <Sider
     breakpoint="lg"
@@ -62,6 +64,13 @@ const NavBar:React.FC<Props> = ({
         <UserOutlined />
         <Link href={`/users`}>
           <span>users</span>
+        </Link>
+      </Menu.Item>
+      <Menu.Item key="6">
+        <UserOutlined />
+        <button onClick={() => api.signout()}>signout</button>
+        <Link href={`/signout`}>
+          <span>signout</span>
         </Link>
       </Menu.Item>
     </Menu>

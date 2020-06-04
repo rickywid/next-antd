@@ -10,20 +10,18 @@ interface IUsers {
 }
 
 const Users:NextPage = ({projects}:IUsers) => {
-return <Layout><div>users page {JSON.stringify(projects)}</div></Layout>
+return (<Layout><div>users page {JSON.stringify(projects)}</div></Layout>)
 }
 
 Users.getInitialProps = async (ctx: NextPageContext) => {
     
     const cookie = ctx.req?.headers.cookie;
-
-    const api = new ApiService(cookie as string);
+    const api =  new ApiService(cookie as string);
     const response = await api.getUsers();
-
+    
     // client side rendering
     if(response.status === 401 && !ctx.req) {
         Router.replace('/login');
-        return;
     }
 
     // server side rendering 
@@ -33,11 +31,10 @@ Users.getInitialProps = async (ctx: NextPageContext) => {
         });
 
         ctx.res!.end();
-        return;
     }
 
     const projects = await response.json();
     return { projects: projects };
 } 
 
-export default Users;
+export default Users; 

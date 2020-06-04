@@ -35,6 +35,18 @@ class AuthService {
         )
         return HttpClient.makeRequest(request)
     }
+
+    signout() {
+        const request = new Request(`
+            ${this.apiEndpoint}/signout`, 
+            { 
+                headers: this.headers,
+                method: 'POST',
+                body: JSON.stringify({})
+            }
+        )
+        return HttpClient.makeRequest(request)
+    }
 }
 
 export default AuthService;

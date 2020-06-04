@@ -5,14 +5,18 @@ import BaseLayout from '../components/layout';
 import ProjectsMain from '../components/projects-main';
 import SearchBar from '../components/search-bar';
 import './index.module.less';
-
+import { ApiService } from '../lib/apiService';
 import {
   Form,
   Select
 } from 'antd';
-import fetch from 'isomorphic-fetch';
 
-const Home: NextPage = ({projects}:{children?: React.ReactNode, projects?: []}) => {
+interface IHome {
+  children?: React.ReactNode, 
+  projects?: [], 
+}
+
+const Home: NextPage = ({projects}: IHome) => {
   const onFormLayoutChange = ({ filter }: []) => {
     console.log(filter);
   };
@@ -48,12 +52,16 @@ const Home: NextPage = ({projects}:{children?: React.ReactNode, projects?: []}) 
   )
 };
 
-export const getServerSideProps: GetServerSideProps<{projects: []}> = async context => {
-  return fetch('http://localhost:3000/api/projects').then((res: any)=>{
-    return res.json();
-  }).then((projects: any) =>{
-    return {props: { projects: projects.data }}
-  });
+export const getServerSideProps: GetServerSideProps<{projects: []}> = async ctx => {
+  let cookie = ctx.req?.headers.cookie;
+
+  const api = new ApiService(cookie as string);
+  const projects = await api.getProjects();
+  const json = await projects.json();
+  
+  return {props: {projects:json.data}}
+    
+  
 }
 
 export default Home;
