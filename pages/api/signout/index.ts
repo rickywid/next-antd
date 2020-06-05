@@ -1,7 +1,7 @@
 import {NextApiRequest, NextApiResponse} from 'next';
 import nextConnect, {NextHandler} from "next-connect";
 import cookie from 'cookie';
-import CookieConfig from '../../../lib/cookieConf';
+import {cookieHeader} from '../../../lib/cookieConf';
 
 const handler = nextConnect();
 
@@ -23,8 +23,8 @@ handler
     next:NextHandler) => {           
         res.setHeader('Set-Cookie', 
           [ 
-            cookie.serialize('token', '', CookieConfig), 
-            cookie.serialize('userID', '', CookieConfig) 
+            cookie.serialize('token', '', cookieHeader), 
+            cookie.serialize('userID', '', cookieHeader) 
           ]
         );
 

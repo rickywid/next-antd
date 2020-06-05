@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { NextPage } from 'next';
+import React, { useState } from 'react';
+import { NextPage, NextPageContext } from 'next';
 import Router from 'next/router';
 import Head from 'next/head';
-import ProjectMain from '../../../components/projects-main';
 import Layout from '../../../components/layout';
 import './upload-project.module.less';
 import {
@@ -17,6 +16,7 @@ import {
 } from 'antd';
 import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { ApiService } from '../../../lib/apiService';
+import { readCookie } from '../../../lib/cookieConf';
 
 interface IFormLayoutChange {
   size: string;
@@ -31,8 +31,7 @@ interface IUploadChange {
 }
 
 interface IHandleRemove {
-  info: {uid: string};
-  fileList: [{uid: string}];
+  [name: string]: {uid: string};
 }
 
 interface IHandlePreview {
@@ -53,7 +52,7 @@ interface IFields {
 }
 
 
-const UploadProject:NextPage = () => {
+const UploadProject:NextPage = ({userID}) => {
 
   const api = new ApiService();
   const [componentSize, setComponentSize] = useState('medium');
@@ -62,12 +61,8 @@ const UploadProject:NextPage = () => {
   const [previewVisible, setPreviewVisible] = useState<boolean>(false);
   const [previewImage, setPreviewImage] = useState<string>('');
   const [previewTitle, setPreviewTitle] = useState<string>('');
-  const [fileList, setFileList] = useState<string[]>([]);              // list of files uploaded locally used by antd
+  const [fileList, setFileList] = useState<any[]>([]);              // list of files uploaded locally used by antd
   const [fileListUpload, setFileListUpload] = useState<any[]>([]);    // list of files uploaded to cloduinary
-  const [inputName, setInputName] = useState<string>('');
-  const [inputTagline, setInputTagline] = useState<string>('');
-  const [inputWebsite, setInputWebsite] = useState<string>('');
-  const [inputDesc, setInputDesc] = useState<string>('');
 
   const { Option } = Select;
 
@@ -115,8 +110,9 @@ const UploadProject:NextPage = () => {
     setPreviewVisible(true);
   }
 
-  const handleOnRemove = ({info, fileList}:IHandleRemove) => {
+  const handleOnRemove = (info: IHandleRemove) => {
     let antdIndexPos:number | null = null;
+
     const removedFileUID = info.uid;
 
     for(let i = 0; i < fileList.length; i++) {
@@ -139,9 +135,10 @@ const UploadProject:NextPage = () => {
     form.append('tags', tags);
     form.append('collaboration', collaboration);
     form.append('screenshots', fileListUpload);
-    form.append('user_id', '1');
+    form.append('user_id', userID || readCookie('userID'));
 
     const res = await api.createProject(form);
+    
     if(res.status === 200) {
       Router.push('/');
     }
@@ -210,40 +207,28 @@ const UploadProject:NextPage = () => {
               name="name" 
               rules={[{required: true, message:'Required'}]}
             >
-              <Input 
-                value={inputName} 
-                onChange={(e)=> setInputName(e.target.value)} 
-            />
+              <Input />
             </Form.Item>
             <Form.Item 
               label="Tagline" 
               name="tagline" 
               rules={[{required: true, message:'Required'}]}
             >
-              <Input 
-                value={inputTagline} 
-                onChange={(e)=> setInputTagline(e.target.value)}
-              />
+              <Input />
             </Form.Item>
             <Form.Item 
               name="description" 
               label="Tell us about your project (features, tech stack, motivation)" 
               rules={[{required: true, message:'Required'}]}
             >
-              <Input.TextArea 
-                value={inputDesc} 
-                onChange={(e)=> setInputDesc(e.target.value)}
-              />
+              <Input.TextArea />
             </Form.Item>
             <Form.Item 
               label="Website" 
               name="url" 
               rules={[{required: true, message:'Required'}]}
             >
-              <Input 
-                value={inputWebsite} 
-                onChange={(e)=> setInputWebsite(e.target.value)}
-              />
+              <Input />
             </Form.Item>
             <Form.Item 
               label="Technologies" 
@@ -294,7 +279,7 @@ const UploadProject:NextPage = () => {
                   onRemove={handleOnRemove as any}
                   customRequest={customRequest as any}
                 >
-                  {fileList.length >= 4 ? null : uploadButton}
+                  {fileList.length >= 1 ? null : uploadButton}
                 </Upload>
                 <Modal
                   visible={previewVisible}
@@ -306,19 +291,6 @@ const UploadProject:NextPage = () => {
                 </Modal>
               </div>
             </Form.Item>
-            <ProjectMain projects={[{
-              id: 1,
-              name: inputName,
-              description: inputDesc,
-              tagline: inputTagline,
-              url: inputWebsite,
-              tags: tagSelect,
-              technologies: technologiesSelect,
-              collaboration: true,
-              created_on: '2020-12-01',
-              user_id: 1,
-              images: fileListUpload.length >= 1 ? fileListUpload : ['sdf']
-            }]}/>
             <Button type="primary" htmlType="submit">Submit</Button>
             </Form>
           </div>
@@ -327,5 +299,23 @@ const UploadProject:NextPage = () => {
     </Layout>
   );
 };
+
+UploadProject.getInitialProps = async (ctx: NextPageContext) => {
+    
+  const cookie = ctx.req?.headers.cookie
+  let userID;
+  
+  // client side rendering
+  if(!ctx.req) {
+    // const cookies = cookie!.parse(ctx.req?.headers.cookie);
+  }
+
+  // server side rendering 
+  if(ctx.req) {
+    userID = cookie?.split('userID=')[1]
+  }
+
+  return { userID };
+} 
 
 export default UploadProject;

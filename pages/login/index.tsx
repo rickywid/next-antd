@@ -99,7 +99,7 @@ const Login:React.FunctionComponent = () => {
                 Log in
               </Button>
               Or
-              <Link href="/register">
+              <Link href="/signup">
                 {/* eslint-disable-next-line jsx-a11y/anchor-is-valid*/}
                 <a> Register</a>
               </Link>

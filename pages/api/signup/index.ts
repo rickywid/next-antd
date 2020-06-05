@@ -4,6 +4,7 @@ import formidable from "formidable";
 import bcrypt from "bcrypt-nodejs";
 import generateToken from '../../../lib/generateToken';
 import cookie from 'cookie';
+import {cookieHeader} from '../../../lib/cookieConf';
 
 const handler = nextConnect();
  
@@ -68,13 +69,8 @@ handler
               const userID = result.rows[0].id;
 
               res.setHeader('Set-Cookie', [ 
-                cookie.serialize('token', token, { 
-                httpOnly: true,
-                secure: process.env.NODE_ENV !== 'development',
-                sameSite: 'strict',
-                path: '/'
-              }), 
-                cookie.serialize('userID', userID) 
+                cookie.serialize('token', token, cookieHeader), 
+                cookie.serialize('userID', userID, cookieHeader) 
               ]);
 
               res.send({isAuthenticated: true});
