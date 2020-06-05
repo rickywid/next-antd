@@ -4,7 +4,6 @@ import { Layout, Menu } from 'antd';
 import { UploadOutlined, UserOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import AuthService from '../lib/authService';
-
 const { Sider } = Layout;
 
 interface Props {
@@ -13,12 +12,61 @@ interface Props {
   signup: string;
   login: string;
   upload: string;
+  userID: string;
 }
 
 const NavBar: NextPage<Props> = ({
-  root, username, signup, login, upload
+  root, username, signup, login, upload, userID
 }) => {
   const api = new AuthService();
+
+  const authMenu = () => (
+    <Menu theme="light" mode="inline">
+    <Menu.Item key="1">
+      <VideoCameraOutlined />
+      <Link as={`/user/${username}`} href="/user/[username]">
+        <span>{username}</span>
+      </Link>
+    </Menu.Item>
+    <Menu.Item key="4">
+      <UserOutlined />
+      <Link href={`/project/${upload}`}>
+        <span>{upload}</span>
+      </Link>
+    </Menu.Item>
+    <Menu.Item key="5">
+      <UserOutlined />
+      <Link href={`/users`}>
+        <span>users</span>
+      </Link>
+    </Menu.Item>
+    <Menu.Item key="6">
+      <UserOutlined />
+      <button onClick={() => api.signout()}>signout</button>
+      <Link href={`/signout`}>
+        <span>signout</span>
+      </Link>
+    </Menu.Item>
+  </Menu>  
+  )
+  
+  const unAuthMenu = () => (
+    <Menu theme="light" mode="inline">
+      <Menu.Item key="2">
+        <UploadOutlined />
+        <Link href={`/${signup}`}>
+          <span>{signup}</span>
+        </Link>
+      </Menu.Item>
+      <Menu.Item key="3">
+        <UserOutlined />
+        <Link href={`/${login}`}>
+          <span>{login}</span>
+        </Link>
+      </Menu.Item>
+    </Menu>  
+  )
+
   return (
     <Sider
     breakpoint="lg"
@@ -35,45 +83,7 @@ const NavBar: NextPage<Props> = ({
         <span>Home</span>
       </Link>
     </div>
-    <Menu theme="light" mode="inline">
-      <Menu.Item key="1">
-        <VideoCameraOutlined />
-        <Link as={`/user/${username}`} href="/user/[username]">
-          <span>{username}</span>
-        </Link>
-      </Menu.Item>
-      <Menu.Item key="2">
-        <UploadOutlined />
-        <Link href={`/${signup}`}>
-          <span>{signup}</span>
-        </Link>
-      </Menu.Item>
-      <Menu.Item key="3">
-        <UserOutlined />
-        <Link href={`/${login}`}>
-          <span>{login}</span>
-        </Link>
-      </Menu.Item>
-      <Menu.Item key="4">
-        <UserOutlined />
-        <Link href={`/project/${upload}`}>
-          <span>{upload}</span>
-        </Link>
-      </Menu.Item>
-      <Menu.Item key="5">
-        <UserOutlined />
-        <Link href={`/users`}>
-          <span>users</span>
-        </Link>
-      </Menu.Item>
-      <Menu.Item key="6">
-        <UserOutlined />
-        <button onClick={() => api.signout()}>signout</button>
-        <Link href={`/signout`}>
-          <span>signout</span>
-        </Link>
-      </Menu.Item>
-    </Menu>
+    {userID ? authMenu() : unAuthMenu()}
       <style jsx>
         {`
           .logo {

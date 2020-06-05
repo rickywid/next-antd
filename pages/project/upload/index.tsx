@@ -304,11 +304,6 @@ UploadProject.getInitialProps = async (ctx: NextPageContext) => {
     
   const cookie = ctx.req?.headers.cookie
   let userID;
-  
-  // client side rendering
-  if(!ctx.req) {
-    // const cookies = cookie!.parse(ctx.req?.headers.cookie);
-  }
 
   // server side rendering 
   if(ctx.req) {

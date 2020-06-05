@@ -12,17 +12,18 @@ import {
 } from 'antd';
 
 interface IHome {
-  children?: React.ReactNode, 
-  projects?: [], 
+  children?: React.ReactNode;
+  projects?: [];
+  userID?: string;
 }
 
-const Home: NextPage = ({projects}: IHome) => {
+const Home: NextPage = ({projects, userID}: IHome) => {
   const onFormLayoutChange = ({ filter }: []) => {
     console.log(filter);
   };
 
   return (
-      <BaseLayout>
+      <BaseLayout userID={userID}>
       <div className="root">
         <Head>
           <title>My awesome app</title>
@@ -53,15 +54,23 @@ const Home: NextPage = ({projects}: IHome) => {
 };
 
 export const getServerSideProps: GetServerSideProps<{projects: []}> = async ctx => {
-  let cookie = ctx.req?.headers.cookie;
-
+  const cookie = ctx.req?.headers.cookie;
+  let userID;
   const api = new ApiService(cookie as string);
   const projects = await api.getProjects();
   const json = await projects.json();
-  
-  return {props: {projects:json.data}}
-    
-  
+
+  if(ctx.req) {
+    userID = cookie?.split('userID=')[1];
+  }
+
+  return {
+    props: 
+      {
+        projects:json.data,
+        userID
+      }
+  }
 }
 
 export default Home;
