@@ -2,7 +2,8 @@ import React, { ReactNode } from 'react';
 import { NextPage } from 'next'
 import './styles/projects-main.less';
 import { Tag } from 'antd';
-import { CommentOutlined, DesktopOutlined } from '@ant-design/icons';
+import { CommentOutlined, HeartOutlined } from '@ant-design/icons';
+import Link from 'next/link';
 
 interface IProps {
   children?: ReactNode,
@@ -10,47 +11,32 @@ interface IProps {
 }
 
 const ProjectsMain:NextPage<IProps> = ({ projects }) => {
-  const renderTechnologies =  (technology: string) => {
-    return <li key={technology}><Tag color="magenta">{technology}</Tag></li>
-  };
-
-  const renderTags =  (tag: string) => {
-    return <li key={tag}><Tag color="blue">{tag}</Tag></li>
-  };
-
   const renderProjects = () => {
     return projects.map((project: any, index: number) => (
-      <li className="project-card" key={index}>
-        <div className="project-card-left">
-          <img className="img" src={project.images[0]} alt=""/>
-          <div className="project-detail">
-            <strong>{project.name}</strong>
-            <p>{project.tagline}</p>
-            <ul className="ul-left">
-              <li className="comments"><a href={project.url}><CommentOutlined /> 20</a></li>
-              <li><a href={project.url}><DesktopOutlined /></a></li>
-            </ul>
-            
-            <ul className="ul-right">
-              {project.technologies ? project.technologies.map(renderTechnologies): <div></div>}
-              {project.tags ? project.tags.map(renderTags) : <div></div>}
-            </ul>
-            
-            
-            
-
+      <li className="project-item">
+        <Link href="/project/[id]" as={`/project/${project.id}`}>
+          <div className="project-card" key={index} style={{ backgroundImage: `url(${project.images[0]}`}}>
+            <div className="project-detail-wrapper">
+              <div className="project-title-wrapper">
+                <h2>{project.name}</h2>
+              </div>
+              <Tag style={{zIndex: 1000}} onClick={() => console.log('tag clicked')}color="magenta">{project.tags[0]}</Tag>
+            </div>
           </div>
-        </div>
-        <div className="project-card-right">
-         <p>20</p>
-        </div>
+        </Link>
+        <div className="project-icons">
+          <Link href="/user/[username]" as={`/user/${project.username}`}><a>{project.username}</a></Link>
+          <div>
+            <span className="project-comments"><CommentOutlined /> 20</span><span><HeartOutlined /> 20    </span>     
+          </div>
+        </div>       
       </li>
-    ))
+    ));
   }
 
   return (
     <div>
-      <ul>
+      <ul className="list-wrapper">
         {renderProjects()}
       </ul>
       

@@ -16,6 +16,7 @@ handler
     res: NextApiResponse) => {
       db.query(`
       select 
+      projects.id,
       projects.name,
       projects.description,
       projects.tagline,
@@ -23,6 +24,8 @@ handler
       projects.images,
       projects.collaboration,
       (select count(*) from comments where comments.project_id = projects.id) as comment_count,
+      (select id from users where users.id = projects.user_id) as user_id,
+      (select username from users where users.id = projects.user_id),
       (select array_agg(technologies.name::TEXT)
         from projects_technologies
         inner join technologies
