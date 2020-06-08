@@ -31,8 +31,6 @@ handler
         res.send(result)
       });
     });
-
-
   });
  
 export default handler;

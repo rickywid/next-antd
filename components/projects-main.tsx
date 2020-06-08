@@ -15,6 +15,7 @@ const ProjectsMain:NextPage<IProps> = ({ projects }) => {
     return projects.map((project: any, index: number) => (
       <li className="project-item">
         <Link href="/project/[id]" as={`/project/${project.id}`}>
+          <a>
           <div className="project-card" key={index} style={{ backgroundImage: `url(${project.images[0]}`}}>
             <div className="project-detail-wrapper">
               <div className="project-title-wrapper">
@@ -23,6 +24,7 @@ const ProjectsMain:NextPage<IProps> = ({ projects }) => {
               <Tag style={{zIndex: 1000}} onClick={() => console.log('tag clicked')}color="magenta">{project.tags[0]}</Tag>
             </div>
           </div>
+          </a>
         </Link>
         <div className="project-icons">
           <Link href="/user/[username]" as={`/user/${project.username}`}><a>{project.username}</a></Link>

@@ -37,4 +37,22 @@ export class ApiService{
           this.headers,
         );
       }
+
+
+      public async getProject(id: string) {
+        this.headers['cookie'] = this.cookie;
+        return await HttpClient.get(
+          `${this.apiEndpoint}/project/${id}`,
+          this.headers,
+        );
+      }
+
+      public async createComment(comment: FormData) {
+        this.headers['cookie'] = this.cookie;
+        return await HttpClient.post(
+          `${this.apiEndpoint}/comment`,
+          this.headers,
+          comment
+        );
+      }
 }

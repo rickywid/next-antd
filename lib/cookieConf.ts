@@ -5,6 +5,14 @@ export const cookieHeader = {
     path: '/'
 }
 
+export const cookieHeaderSignOut = {
+  httpOnly: false,
+  secure: process.env.NODE_ENV !== 'development',
+  sameSite: true,
+  path: '/',
+  expires: new Date('Thu, 01 Jan 1970 00:00:01 GMT')
+}
+
 export const readCookie = (cname: string) => {
     var name = cname + "=";
     var decodedCookie = decodeURIComponent(document.cookie);

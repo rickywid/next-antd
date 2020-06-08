@@ -58,7 +58,8 @@ handler
 
            res.setHeader('Set-Cookie', [ 
             cookie.serialize('token', token, cookieHeader), 
-            cookie.serialize('userID', user.id, cookieHeader) 
+            cookie.serialize('userID', user.id, cookieHeader),
+            cookie.serialize('login', username, cookieHeader) 
           ]);
            
            res.send({isAuthenticated: true});

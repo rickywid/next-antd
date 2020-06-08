@@ -1,9 +1,11 @@
 import React from 'react';
 import { NextPage } from 'next';
+import Router from 'next/router';
 import { Layout, Menu } from 'antd';
 import { UploadOutlined, UserOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import AuthService from '../lib/authService';
+
 const { Sider } = Layout;
 
 interface Props {
@@ -20,8 +22,17 @@ const NavBar: NextPage<Props> = ({
 }) => {
   const api = new AuthService();
 
+  const onSignout = async () => {
+    const res = await api.signout();
+
+    if(res.status === 200) {
+      Router.push('/');
+    }
+  }
+
   const authMenu = () => (
     <Menu theme="light" mode="inline">
+      
     <Menu.Item key="1">
       <VideoCameraOutlined />
       <Link as={`/user/${username}`} href="/user/[username]">
@@ -42,7 +53,7 @@ const NavBar: NextPage<Props> = ({
     </Menu.Item>
     <Menu.Item key="6">
       <UserOutlined />
-      <button onClick={() => api.signout()}>signout</button>
+      <button onClick={onSignout}>signout</button>
       <Link href={`/signout`}>
         <span>signout</span>
       </Link>

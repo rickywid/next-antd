@@ -68,7 +68,7 @@ export const getServerSideProps: GetServerSideProps<{projects: []}> = async ctx 
     props: 
       {
         projects:json.data,
-        userID
+        userID: userID || null
       }
   }
 }
