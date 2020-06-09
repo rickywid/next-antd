@@ -6,12 +6,13 @@ import Footer from './footer';
 interface IBaseLayout {
   children?: React.ReactNode;
   userID?: string;
+  username?: string;
 }
-const BaseLayout: React.FC<IBaseLayout> = ({ children, userID }: IBaseLayout) => (
+const BaseLayout: React.FC<IBaseLayout> = ({ children, userID, username }: IBaseLayout) => (
   <Layout style={{ minHeight: '100vh' }}>
     <NavBar
       root="/"
-      username="ricky"
+      username={username}
       signup="signup"
       login="login"
       upload="upload"

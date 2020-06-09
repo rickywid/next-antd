@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NextPage, NextPageContext } from 'next';
+import { NextPage, GetServerSideProps } from 'next';
 import Router from 'next/router';
 import Head from 'next/head';
 import Layout from '../../../components/layout';
@@ -17,6 +17,7 @@ import {
 import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { ApiService } from '../../../lib/apiService';
 import { readCookie } from '../../../lib/cookieConf';
+import getUser from '../../../lib/getUser';
 
 interface IFormLayoutChange {
   size: string;
@@ -52,7 +53,7 @@ interface IFields {
 }
 
 
-const UploadProject:NextPage = ({userID}) => {
+const UploadProject:NextPage = ({userID, username}: any) => {
 
   const api = new ApiService();
   const [componentSize, setComponentSize] = useState('medium');
@@ -177,7 +178,7 @@ const UploadProject:NextPage = ({userID}) => {
   );
 
   return (
-    <Layout>
+    <Layout userID={userID} username={username}>
       <div>
         <Head>
           <title>Upload Project</title>
@@ -300,17 +301,14 @@ const UploadProject:NextPage = ({userID}) => {
   );
 };
 
-UploadProject.getInitialProps = async (ctx: NextPageContext) => {
-    
-  const cookie = ctx.req?.headers.cookie
-  let userID;
+export const getServerSideProps: GetServerSideProps = async ctx => {
 
-  // server side rendering 
-  if(ctx.req) {
-    userID = cookie?.split('userID=')[1]
-  }
-
-  return { userID };
-} 
+  const user = getUser(ctx);
+  return { props: { 
+    userID: user.id,
+    username: user.username
+  }};
+}
 
 export default UploadProject;
+

@@ -6,6 +6,8 @@ import ProjectsMain from '../components/projects-main';
 import SearchBar from '../components/search-bar';
 import './index.module.less';
 import { ApiService } from '../lib/apiService';
+import getUser from '../lib/getUser';
+
 import {
   Form,
   Select
@@ -15,15 +17,16 @@ interface IHome {
   children?: React.ReactNode;
   projects?: [];
   userID?: string;
+  username?: string;
 }
 
-const Home: NextPage = ({projects, userID}: IHome) => {
+const Home: NextPage = ({projects, userID, username}: IHome) => {
   const onFormLayoutChange = ({ filter }: []) => {
     console.log(filter);
   };
 
   return (
-      <BaseLayout userID={userID}>
+      <BaseLayout userID={userID} username={username}>
       <div className="root">
         <Head>
           <title>My awesome app</title>
@@ -53,22 +56,20 @@ const Home: NextPage = ({projects, userID}: IHome) => {
   )
 };
 
-export const getServerSideProps: GetServerSideProps<{projects: []}> = async ctx => {
+export const getServerSideProps: GetServerSideProps = async ctx => {
   const cookie = ctx.req?.headers.cookie;
-  let userID;
   const api = new ApiService(cookie as string);
   const projects = await api.getProjects();
   const json = await projects.json();
 
-  if(ctx.req) {
-    userID = cookie?.split('userID=')[1];
-  }
+  const user = getUser(ctx);
 
   return {
     props: 
       {
         projects:json.data,
-        userID: userID || null
+        userID: user.id || null,
+        username: user.username || null
       }
   }
 }

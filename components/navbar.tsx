@@ -10,11 +10,11 @@ const { Sider } = Layout;
 
 interface Props {
   root: string;
-  username: string;
+  username?: string;
   signup: string;
   login: string;
   upload: string;
-  userID: string;
+  userID?: string | null;
 }
 
 const NavBar: NextPage<Props> = ({

@@ -8,6 +8,7 @@ import { CodeOutlined, HeartFilled, DesktopOutlined, TagFilled, CalendarFilled, 
 import { Form, Input, Button, Divider } from 'antd';
 import moment from 'moment';
 import { readCookie } from '../../../lib/cookieConf';
+import getUser from '../../../lib/getUser';
 
 import './index.less';
 
@@ -30,6 +31,7 @@ interface IProjectPage {
     };
     comments?: any[];
     userID?: string | null;
+    username?: string;
 }
 
 interface IFields {
@@ -38,7 +40,7 @@ interface IFields {
 
 const api = new ApiService();
 
-const ProjectPage: NextPage = ({ project, comments, userID }: IProjectPage) => {
+const ProjectPage: NextPage = ({ project, comments, userID, username }: IProjectPage) => {
     const [c, setC] = useState(comments);
 
     useEffect(() => {
@@ -62,7 +64,7 @@ const ProjectPage: NextPage = ({ project, comments, userID }: IProjectPage) => {
       }
 
     return (
-        <BaseLayout>
+        <BaseLayout userID={userID} username={username}>
             <div className="root">
                 <Head>
                     <title>My awesome app</title>
@@ -147,22 +149,18 @@ const ProjectPage: NextPage = ({ project, comments, userID }: IProjectPage) => {
 };
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
-    const cookie = ctx.req?.headers.cookie;
-    let userID;
-
+    const user = getUser(ctx);
     const id = ctx.params?.id as string;
     const project = await api.getProject(id);
     const json = await project.json();
 
-    if(ctx.req) {
-        userID = cookie?.split(';')[1].split('userID=')[1];
-    }
     return {
         props:
         {
             project: json.data,
             comments: json.comments,
-            userID: userID || null
+            userID: user.id || null,
+            username: user.username || null
         }
     }
 }
