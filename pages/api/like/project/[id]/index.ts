@@ -15,7 +15,6 @@ handler
     .get((
         req: NextApiRequest, 
         res: NextApiResponse) => {
-        
         const form = new formidable.IncomingForm();
         
         form.parse(req, async (err, fields, files) => { 
@@ -50,9 +49,9 @@ handler
   .post((
     req: NextApiRequest, 
     res: NextApiResponse) => {
-      
       const form = new formidable.IncomingForm();
       form.parse(req, async (err, fields, files) => { 
+          console.log(fields)
           
           if(err) {
             console.log('err');

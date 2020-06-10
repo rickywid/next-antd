@@ -2,8 +2,9 @@ import { HttpClient } from './httpClient';
 
 export class ApiService{
     constructor(cookie?: string) {
+      console.log(process.env.DOMAIN)
         this.cookie = cookie as string;
-        this.apiEndpoint = 'http://localhost:3000/api'
+        this.apiEndpoint = `${process.env.DOMAIN}/api` as string;
     }
     private cookie: string;
     private apiEndpoint: string;
@@ -30,7 +31,7 @@ export class ApiService{
         );
       }
 
-      public async getProjects() {
+      public async getProjects() {  
         this.headers['cookie'] = this.cookie;
         return await HttpClient.get(
           `${this.apiEndpoint}/projects`,
@@ -53,6 +54,32 @@ export class ApiService{
           `${this.apiEndpoint}/comment`,
           this.headers,
           comment
+        );
+      }
+      
+      public async getProjectLikes(id: string) {
+        this.headers['cookie'] = this.cookie;
+        return await HttpClient.get(
+          `${this.apiEndpoint}/like/project/${id}`,
+          this.headers,
+        );
+      }
+
+      public async likeProject(id: string, like: FormData) {
+        this.headers['cookie'] = this.cookie;
+        return await HttpClient.post(
+          `http://localhost:3000/api/like/project/${id}`,
+          this.headers,
+          like
+        );
+      }
+
+      public async unlikeProject(id: string, like: FormData) {
+        this.headers['cookie'] = this.cookie;
+        return await HttpClient.delete(
+          `http://localhost:3000/api/like/project/${id}`,
+          this.headers,
+          like
         );
       }
 }

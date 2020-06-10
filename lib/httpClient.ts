@@ -28,4 +28,16 @@ export class HttpClient {
 
         return await HttpClient.makeRequest(request);
     }
+
+    public static async delete(endpoint: string, headers={}, data: FormData): Promise<Response> {
+        const request = new Request(endpoint, {
+            body: FormSerialize(data),
+            headers,
+            method: 'DELETE',
+            mode: 'cors'
+        });
+
+        return await HttpClient.makeRequest(request);
+    }
+
 }

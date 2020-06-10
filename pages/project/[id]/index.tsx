@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { NextPage, GetServerSideProps } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
+import Router from 'next/router';
 import BaseLayout from '../../../components/layout';
 import { ApiService } from '../../../lib/apiService';
 import { CodeOutlined, HeartFilled, DesktopOutlined, TagFilled, CalendarFilled, TeamOutlined } from '@ant-design/icons';
@@ -32,6 +33,7 @@ interface IProjectPage {
     comments?: any[];
     userID?: string | null;
     username?: string;
+    likes? : any[];
 }
 
 interface IFields {
@@ -40,17 +42,44 @@ interface IFields {
 
 const api = new ApiService();
 
-const ProjectPage: NextPage = ({ project, comments, userID, username }: IProjectPage) => {
+const ProjectPage: NextPage = ({ project, comments, userID, username, likes }: IProjectPage) => {
     const [c, setC] = useState(comments);
-
+    const [isLiked, setisLiked] = useState<boolean>(likes.users.includes(parseInt(userID)));
+    const [likeCount, setLikeCount] = useState<string>(likes.count);
+        
     useEffect(() => {
         
     }, [c]);    
     
+    const handleLike = async (like?: boolean) => {
+        const user = userID || readCookie('userID');
+        const form = new FormData();
+        let data;
+
+        form.append('project_id', project.id);
+        form.append('user_id', user);
+        
+        if(!user) {
+            Router.push('/login');
+            return;
+        }
+        if(like) {
+            const res = await api.likeProject(project?.id, form);
+            data = await res.json();
+        } else {
+            console.log('unlike')
+            const res = await api.unlikeProject(project?.id, form);
+            data = await res.json();
+        }
+        
+        setisLiked(data.data.users.includes(parseInt(user)));
+        setLikeCount(data.data.count);
+    } 
+
     const onFinish = async (values: IFields) => {
         
         const { comment } = values;
-        const form = new FormData()
+        const form = new FormData();
         form.append('comment', comment);
         form.append('project_id', project.id);
         form.append('user_id', userID || readCookie('userID'));
@@ -77,7 +106,8 @@ const ProjectPage: NextPage = ({ project, comments, userID, username }: IProject
                             <p>by <Link href="/user/[username]" as={`/user/${project.username}`}><a>{project.username}</a></Link></p> 
                         </div>
                         <div className="button-wrap">
-                            <Button icon={<HeartFilled />}>Like</Button>                
+                            {isLiked ? <Button onClick={() => handleLike()} icon={<HeartFilled />}>Liked</Button> : <Button onClick={() => handleLike(true)} icon={<HeartFilled />}>Like</Button>}
+                            
                             <Button>Save</Button>           
                         </div>
 
@@ -135,7 +165,7 @@ const ProjectPage: NextPage = ({ project, comments, userID, username }: IProject
                             <Divider />
                             <div className="project-view-details">
                                 <ul>
-                                    <li><HeartFilled /> 100 likes</li>
+                                    <li><HeartFilled /> {likeCount} likes</li>
                                     <li><TeamOutlined /> Interested in collaborating</li>
                                     <li><CalendarFilled /> Created June 4, 2020</li>
                                 </ul>
@@ -152,13 +182,17 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const user = getUser(ctx);
     const id = ctx.params?.id as string;
     const project = await api.getProject(id);
-    const json = await project.json();
+    const likes = await api.getProjectLikes(id);
+    const likesRes = await likes.json();
+    const projectRes = await project.json();
 
+    console.log(likesRes);
     return {
         props:
         {
-            project: json.data,
-            comments: json.comments,
+            project: projectRes.data,
+            likes: likesRes.data,
+            comments: projectRes.comments,
             userID: user.id || null,
             username: user.username || null
         }
