@@ -1,6 +1,6 @@
 import nextConnect from 'next-connect';
 import cors from 'cors';
-
+import passport from 'passport';
 const middleware = nextConnect();
 
 var corsOptions = {
@@ -10,7 +10,9 @@ var corsOptions = {
 
 // add middleware
 middleware.use(cors(corsOptions));
-// middleware.use(formData.parse());
+middleware.use(passport.initialize());
+middleware.use(passport.session());
+
 
 
 export default middleware;

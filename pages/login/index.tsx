@@ -104,6 +104,7 @@ const Login:React.FunctionComponent = () => {
                 <a> Register</a>
               </Link>
             </Form.Item>
+            <Button onClick={() => window.open(`http://localhost:3000/api/auth/github`, '_self')}>Github</Button>
           </Form>
         </div>
       </div>
