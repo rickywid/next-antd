@@ -45,7 +45,10 @@ module.exports = withLess({
     JWT_SECRET: process.env.JWT_SECRET,
     CLOUDINARY_NAME: process.env.CLOUDINARY_NAME,
     CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
-    CLOUDINARY_SECRET: process.env.CLOUDINARY_SECRET
+    CLOUDINARY_SECRET: process.env.CLOUDINARY_SECRET,
+    GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
+    GITHUB_SECRET: process.env.GITHUB_SECRET,
+    HOSTNAME: process.env.DOMAIN
 
   }
 })
