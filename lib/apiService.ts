@@ -2,7 +2,6 @@ import { HttpClient } from './httpClient';
 
 export class ApiService{
     constructor(cookie?: string) {
-      console.log(process.env.DOMAIN)
         this.cookie = cookie as string;
         this.apiEndpoint = `${process.env.DOMAIN}/api` as string;
     }
@@ -68,7 +67,7 @@ export class ApiService{
       public async likeProject(id: string, like: FormData) {
         this.headers['cookie'] = this.cookie;
         return await HttpClient.post(
-          `http://localhost:3000/api/like/project/${id}`,
+           `${this.apiEndpoint}/like/project/${id}`,
           this.headers,
           like
         );
@@ -77,7 +76,7 @@ export class ApiService{
       public async unlikeProject(id: string, like: FormData) {
         this.headers['cookie'] = this.cookie;
         return await HttpClient.delete(
-          `http://localhost:3000/api/like/project/${id}`,
+           `${this.apiEndpoint}/like/project/${id}`,
           this.headers,
           like
         );

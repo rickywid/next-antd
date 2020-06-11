@@ -1,9 +1,12 @@
 import { GetServerSidePropsContext } from 'next';
+import c from 'cookie';
 
 export default (ctx: GetServerSidePropsContext) => {
-    const cookie = ctx.req.headers.cookie;
-    let id = cookie?.split(';')[1].split('userID=')[1];
-    let username = cookie?.split(';')[2].split('login=')[1];
+    const cookie = ctx.req.headers.cookie || "";
+    const user = c.parse(cookie as string)
+   
+    let id = user.userID;
+    let username = user.login;
 
     return {
         id,

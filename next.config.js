@@ -48,7 +48,7 @@ module.exports = withLess({
     CLOUDINARY_SECRET: process.env.CLOUDINARY_SECRET,
     GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
     GITHUB_SECRET: process.env.GITHUB_SECRET,
-    HOSTNAME: process.env.DOMAIN
+    DOMAIN: process.env.DOMAIN
 
   }
 })
